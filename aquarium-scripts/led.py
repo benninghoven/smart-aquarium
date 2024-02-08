@@ -1,15 +1,14 @@
+##################################
+# Devin Benninghoven
+# 02/08/24
+# Controller for LED light
+##################################
+
+
 from gpiozero import PWMLED
-from time import sleep
 
 led = PWMLED(26)
 
-while True:
-    led.value = 0  # off
-    print(led.value)
-    sleep(1)
-    led.value = 0.5  # half brightness
-    print(led.value)
-    sleep(1)
-    led.value = 1  # full brightness
-    print(led.value)
-    sleep(1)
+# 0 - 1 for value
+led.value = 1
+# will turn off after script is finished
