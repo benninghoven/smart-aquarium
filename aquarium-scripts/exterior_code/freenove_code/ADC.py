@@ -44,4 +44,3 @@ if __name__ == '__main__':   # Program entrance
         loop()
     except KeyboardInterrupt: # Press ctrl-c to end the program.
         destroy()
-
