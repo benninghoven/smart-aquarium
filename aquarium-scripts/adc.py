@@ -5,35 +5,38 @@
 # Author      : www.freenove.com
 # modification: 2020/03/06
 ########################################################################
-import time
-from ADCDevice import *
+from ADCDevice import ADS7830, ADCDevice
+from time import sleep
+from colorama import Fore, Back, Style
 
-adc = ADCDevice() # Define an ADCDevice class object
+#print(f"{Fore.RED}This is red")
+#print(f"{Back.GREEN}This has a green background")
+#print(f"{Fore.YELLOW}{Back.BLUE}This has yellow foreground and blue background")
 
+# Reset colors
+#print(f"{Style.RESET_ALL}This is the default text color")
 
-def setup():
-    global adc
-    adc = ADS7830()
-        
-
-def loop():
-    while True:
-        analogChannel = 0
-        value = adc.analogRead(analogChannel)    # read the ADC value of channel 0
-        voltage = value / 255.0 * 3.3  # calculate the voltage value
-        print (f'Channel: {analogChannel} ADC Value : {value}, Voltage : {voltage:.2f}')
-        time.sleep(0.1)
+class Adc:
+    def __init__(self):
+        self.adc = ADS7830()
 
 
-def destroy():
-    adc.close()
-    
+    def poll_sensor(self, analogChannel=0):
+        value = self.adc.analogRead(analogChannel)
+        voltage = value / 255.0 * 3.3
+        return [value, voltage]
 
-if __name__ == '__main__':   # Program entrance
-    print('Program is starting ... ')
-    try:
-        setup()
-        loop()
-    except KeyboardInterrupt: # Press ctrl-c to end the program.
-        destroy()
 
+    def __del__(self):
+        print("destroying adc object")
+        self.adc.close()
+
+
+#result = convert_to_ppm(adc_value, water_temperature)
+#print(f"ADC Value: {adc_value}")
+#print(f"Water Temperature: {water_temperature} °C")
+#print(f"Compensated PPM Result: {result}")
+
+
+#print(f"{Fore.RED}MODE: {mode}")
+#print(f"{Style.RESET_ALL}")
