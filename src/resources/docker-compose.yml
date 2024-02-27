@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  flask-app:
+    image: python:3.8-slim
+    working_dir: /app
+    ports:
+      - "52355:5000"
+    volumes:
+      - ./../api:/app
+    command: >
+      bash -c "pip install --no-cache-dir -r requirements.txt && python3 /app/main.py"
+
