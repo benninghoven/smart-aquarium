@@ -43,3 +43,4 @@ class Sensor:
             return -42
         else:
             return randint(self.min, self.max)
+
