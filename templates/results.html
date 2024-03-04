@@ -1,0 +1,37 @@
+{% extends "basehtml.html" %}
+<title>{{tasks[0].username}}</title>
+{% block head %}
+<h2>Smart Aquarium</h2>
+{% endblock %}
+{% block body %}
+    <h4>Data from Database:</h4>
+    <p>{{tasks}}</p>
+    <table border="1px grey">
+        <tr>
+            <th>username</th>
+            <th>timestamp</th>
+            <th>water temp</th>
+            <th>PPM</th>
+            <th>pH</th>
+            <th>action:</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <td>{{task[0]}}</td>
+                <td>{{task[1]}}</td>
+                <td>{{task[2]}}</td>
+                <td>{{task[3]}}</td>
+                <td>{{task[4]}}</td>
+                <td>
+                    <a href="">drop</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <form action="/" method="POST">
+        <p>do not use text box rn</p>
+        <input type="text" name="content" id="content">
+        <input type="submit" text="Refresh">
+    </form>
+{% endblock %}
