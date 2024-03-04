@@ -1,8 +1,8 @@
-import sys
-sys.path.append('../')
-import time
 from ADS1115 import ADS1115
 from DFRobot_PH import DFRobot_PH
+import time
+import sys
+sys.path.append('../')
 
 ADS1115_REG_CONFIG_PGA_6_144V = 0x00  # 6.144V range = Gain 2/3
 ADS1115_REG_CONFIG_PGA_4_096V = 0x02  # 4.096V range = Gain 1

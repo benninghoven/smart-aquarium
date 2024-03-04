@@ -16,8 +16,8 @@ parent_dir = os.path.abspath(os.path.join(current_script_dir, os.pardir))
 os.chdir(parent_dir)
 
 
-LOOPS = 10
-SLEEPTIME = .2
+LOOPS = 100
+SLEEPTIME = .3
 
 
 def convert_to_tds(voltage, temperature):
@@ -42,20 +42,3 @@ for i in range(0, LOOPS):
 
 modeTemperature = mode(temperatureValues)
 print(f"Mode Temperature: {modeTemperature:.2f}F")
-
-tds_values = []
-adc = Adc()
-for i in range(0, LOOPS):
-    adc_value, voltage = adc.poll_sensor(1)
-    tds = int(convert_to_tds(voltage, modeTemperature))
-    tds_values.append(tds)
-    print(f"{tds}ppm")
-    sleep(SLEEPTIME)
-
-mode_tds = mode(tds_values)
-print(f"Mode TDS: {mode_tds}ppm")
-
-for i in range(0, LOOPS):
-    adc_value, voltage = adc.poll_sensor(0)
-    print(f"{adc_value} - {voltage}V")
-    sleep(SLEEPTIME)
