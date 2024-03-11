@@ -1,0 +1,24 @@
+{% extends "basehtml.html" %}
+<title>Login Page</title>
+{% block head %}
+<h2>Smart Aquarium</h2>
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Log in</h3>
+                <form method="POST" action="{{url_for('handle_login')}}">
+                    <p>Username</p>
+                    <input type="text" name="username" placeholder="Ex: TESTUSER">
+                    <p>Password</p>
+                    <input type="password" name="password" placeholder="****">
+                    <input type="submit" name="submit_btn" value="Login" class="btn-submit">
+                </form>
+                <form method="GET" action="{{url_for('get_account_creation_page')}}">
+                    <input type="submit" value="Create Account">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
