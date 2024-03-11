@@ -34,4 +34,7 @@
         <input type="text" name="content" id="content">
         <input type="submit" text="Refresh">
     </form>
+    <form method="GET" action="{{url_for('get_login')}}">
+        <input type="submit" value="Log in">
+    </form>
 {% endblock %}
