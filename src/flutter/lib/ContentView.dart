@@ -129,6 +129,8 @@ class _ContentViewState extends State<ContentView> {
                     const Text("Don't have an account?"),
                     TextButton(
                       onPressed: () {
+                        _nameController.clear();
+                        _passwordController.clear();
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const SignUpView()),
@@ -243,7 +245,7 @@ class _SignUpViewState extends State<SignUpView> {
                           textColor: Colors.white,
                           fontSize: 16.0,
                         );
-
+                        
                         // Navigate back to the login page
                         Navigator.pop(context);
                       },
