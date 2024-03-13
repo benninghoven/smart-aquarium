@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
-
 void main() {
   runApp(const MaterialApp(
     home: ContentView(),
@@ -16,24 +14,22 @@ class AuthManager extends ChangeNotifier {
 }
 
 class ContentView extends StatefulWidget {
-  const ContentView({super.key});
+  const ContentView({Key? key}) : super(key: key);
 
   @override
   _ContentViewState createState() => _ContentViewState();
 }
 
-
 class _ContentViewState extends State<ContentView> {
-
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   AuthManager authManager = AuthManager();
   String name = '';
   String password = '';
   bool showPassword = false;
-  bool navigateToPagesView = false;
-  bool navigateToSignUpView = false;
 
-  bool get isSignInButtonDisabled => name.isEmpty || password.isEmpty;
+  bool get isSignInButtonDisabled => _nameController.text.isEmpty || _passwordController.text.isEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +43,7 @@ class _ContentViewState extends State<ContentView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextField(
+                  controller: _nameController,
                   decoration: InputDecoration(
                     hintText: 'Username',
                     labelText: 'Username',
@@ -61,12 +58,13 @@ class _ContentViewState extends State<ContentView> {
                       name = value;
                     });
                   },
-                ), 
+                ),
                 const SizedBox(height: 15.0),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: _passwordController,
                         obscureText: !showPassword,
                         decoration: InputDecoration(
                           hintText: 'Password',
@@ -84,7 +82,7 @@ class _ContentViewState extends State<ContentView> {
                         },
                       ),
                     ),
-                    IconButton( // Added IconButton
+                    IconButton(
                       icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
                       color: Colors.red,
                       onPressed: () {
@@ -97,52 +95,52 @@ class _ContentViewState extends State<ContentView> {
                 ),
                 const SizedBox(height: 15.0),
                 ElevatedButton(
-  onPressed: isSignInButtonDisabled
-      ? null
-      : () {
-          
-          setState(() {
-            navigateToPagesView = true;
-            
-          });
-          
-          Fluttertoast.showToast(
-                          msg: 'Sign in successful!',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-          
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const PagesView(selectedTab: Tab.house,),
-            
-          ));
-        },
-  child: const Text('Sign In'),
-),
+                  onPressed: isSignInButtonDisabled
+                      ? null
+                      : () {
+                          Fluttertoast.showToast(
+                            msg: 'Sign in successful!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+
+                          // Navigate to the next screen
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const PagesView(selectedTab: Tab.house),
+                          )).then((_) {
+                            // Clear the text fields after successful login
+                            _nameController.clear();
+                            _passwordController.clear();
+
+                            // Reset the state of the Sign In button
+                            setState(() {});
+                          });
+                        },
+                  child: const Text('Sign In'),
+                ),
                 const SizedBox(height: 15.0),
                 Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    const Text("Don't have an account?"),
-    TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignUpView()),
-        );
-      },
-      child: const Text(
-        'Sign Up',
-        style: TextStyle(color: Colors.blue),
-      ),
-    ),
-  ],
-),
-
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SignUpView()),
+                        );
+                      },
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -153,20 +151,13 @@ class _ContentViewState extends State<ContentView> {
 }
 
 class SignUpView extends StatefulWidget {
-  const SignUpView({super.key});
+  const SignUpView({Key? key}) : super(key: key);
 
   @override
   _SignUpViewState createState() => _SignUpViewState();
 }
 
 class _SignUpViewState extends State<SignUpView> {
-  String email = '';
-  String password = '';
-  String confirmPassword = '';
-
-  bool get isSignUpButtonDisabled =>
-      email.isEmpty || password.isEmpty || confirmPassword.isEmpty || password != confirmPassword;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,9 +181,7 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 15.0),
@@ -206,9 +195,7 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    password = value;
-                  });
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 15.0),
@@ -222,33 +209,12 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {
-                    confirmPassword = value;
-                  });
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 15.0),
               ElevatedButton(
-                onPressed: isSignUpButtonDisabled
-                    ? null
-                    : () {
-                        // Perform sign-up action here
-                        print("do sign-up action");
-
-                        // Show a toast message
-                        Fluttertoast.showToast(
-                          msg: 'Sign up successful!',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-
-                        // Navigate back to the login page
-                        Navigator.pop(context);
-                      },
+                onPressed: () {},
                 child: const Text('Sign Up'),
               ),
               const Spacer(),
@@ -260,18 +226,16 @@ class _SignUpViewState extends State<SignUpView> {
   }
 }
 
-
 enum Tab { house, message, person, car, trash }
 
 class PagesView extends StatefulWidget {
   final Tab selectedTab;
 
-  const PagesView({super.key, required this.selectedTab});
+  const PagesView({Key? key, required this.selectedTab}) : super(key: key);
 
   @override
   _PagesViewState createState() => _PagesViewState();
 }
-
 
 class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMixin {
   late TabController _tabController;
@@ -313,7 +277,7 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
             child: MyTabBar(
               selectedTab: Tab.values[_tabController.index],
               onTabChanged: (tab) {
-                setState(() { 
+                setState(() {
                   _tabController.index = Tab.values.indexOf(tab);
                 });
               },
@@ -325,11 +289,8 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
   }
 }
 
-
-
-
 class FirstScreen extends StatelessWidget {
-  const FirstScreen({super.key});
+  const FirstScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -347,9 +308,8 @@ class FirstScreen extends StatelessWidget {
   }
 }
 
-
 class SecondScreen extends StatelessWidget {
-  const SecondScreen({super.key});
+  const SecondScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -369,7 +329,7 @@ class SecondScreen extends StatelessWidget {
 }
 
 class ThirdScreen extends StatelessWidget {
-  const ThirdScreen({super.key});
+  const ThirdScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -389,7 +349,7 @@ class ThirdScreen extends StatelessWidget {
 }
 
 class FourthScreen extends StatelessWidget {
-  const FourthScreen({super.key});
+  const FourthScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -409,7 +369,7 @@ class FourthScreen extends StatelessWidget {
 }
 
 class FifthScreen extends StatelessWidget {
-  const FifthScreen({super.key});
+  const FifthScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
