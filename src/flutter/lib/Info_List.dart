@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+IconData fishIcon = FontAwesomeIcons.fish;
 
-enum Tab { house, message, person, car, trash }
+enum Tab { house, fishIcon, person, car, trash }
 
 class MyTabBar extends StatelessWidget {
   final Tab selectedTab;
