@@ -1,0 +1,1 @@
+ C:\\Users\\Aren\\Desktop\\FishTank\\smart-aquarium\\src\\flutter\\.dart_tool\\flutter_build\\07017457eeb703d8b2ec0406558d3644\\native_assets.yaml: 
