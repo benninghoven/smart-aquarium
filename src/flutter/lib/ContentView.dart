@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 
 void main() {
@@ -20,7 +22,10 @@ class ContentView extends StatefulWidget {
   _ContentViewState createState() => _ContentViewState();
 }
 
+
 class _ContentViewState extends State<ContentView> {
+
+
   AuthManager authManager = AuthManager();
   String name = '';
   String password = '';
@@ -43,8 +48,8 @@ class _ContentViewState extends State<ContentView> {
               children: [
                 TextField(
                   decoration: InputDecoration(
-                    hintText: 'Name',
-                    labelText: 'Login',
+                    hintText: 'Username',
+                    labelText: 'Username',
                     labelStyle: const TextStyle(color: Colors.blue),
                     border: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.blue),
@@ -56,7 +61,7 @@ class _ContentViewState extends State<ContentView> {
                       name = value;
                     });
                   },
-                ),
+                ), 
                 const SizedBox(height: 15.0),
                 Row(
                   children: [
@@ -95,11 +100,25 @@ class _ContentViewState extends State<ContentView> {
   onPressed: isSignInButtonDisabled
       ? null
       : () {
+          
           setState(() {
             navigateToPagesView = true;
+            
           });
+          
+          Fluttertoast.showToast(
+                          msg: 'Sign in successful!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+          
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const PagesView(selectedTab: Tab.house,),
+            
           ));
         },
   child: const Text('Sign In'),
@@ -262,6 +281,9 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
     super.initState();
     _tabController = TabController(length: Tab.values.length, vsync: this);
     _tabController.index = Tab.values.indexOf(widget.selectedTab);
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -289,9 +311,9 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
           Align(
             alignment: Alignment.bottomCenter,
             child: MyTabBar(
-              selectedTab: widget.selectedTab,
+              selectedTab: Tab.values[_tabController.index],
               onTabChanged: (tab) {
-                setState(() {
+                setState(() { 
                   _tabController.index = Tab.values.indexOf(tab);
                 });
               },
@@ -410,7 +432,7 @@ class MyTabBar extends StatelessWidget {
   final Tab selectedTab;
   final ValueChanged<Tab> onTabChanged;
 
-  const MyTabBar({super.key, required this.selectedTab, required this.onTabChanged});
+  const MyTabBar({Key? key, required this.selectedTab, required this.onTabChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -418,33 +440,21 @@ class MyTabBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () => onTabChanged(Tab.house),
-            color: selectedTab == Tab.house ? Colors.blue : Colors.grey,
-          ),
-          IconButton(
-            icon: const Icon(Icons.message),
-            onPressed: () => onTabChanged(Tab.message),
-            color: selectedTab == Tab.message ? Colors.blue : Colors.grey,
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () => onTabChanged(Tab.person),
-            color: selectedTab == Tab.person ? Colors.blue : Colors.grey,
-          ),
-          IconButton(
-            icon: const Icon(Icons.directions_car),
-            onPressed: () => onTabChanged(Tab.car),
-            color: selectedTab == Tab.car ? Colors.blue : Colors.grey,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => onTabChanged(Tab.trash),
-            color: selectedTab == Tab.trash ? Colors.blue : Colors.grey,
-          ),
+          buildTabIcon(Icons.home, Tab.house),
+          buildTabIcon(FontAwesomeIcons.fish, Tab.message),
+          buildTabIcon(Icons.person, Tab.person),
+          buildTabIcon(Icons.directions_car, Tab.car),
+          buildTabIcon(Icons.delete, Tab.trash),
         ],
       ),
+    );
+  }
+
+  IconButton buildTabIcon(IconData icon, Tab tab) {
+    return IconButton(
+      icon: Icon(icon),
+      onPressed: () => onTabChanged(tab),
+      color: selectedTab == tab ? Colors.blue : Colors.grey,
     );
   }
 }
