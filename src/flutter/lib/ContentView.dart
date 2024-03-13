@@ -151,13 +151,20 @@ class _ContentViewState extends State<ContentView> {
 }
 
 class SignUpView extends StatefulWidget {
-  const SignUpView({Key? key}) : super(key: key);
+  const SignUpView({super.key});
 
   @override
   _SignUpViewState createState() => _SignUpViewState();
 }
 
 class _SignUpViewState extends State<SignUpView> {
+  String email = '';
+  String password = '';
+  String confirmPassword = '';
+
+  bool get isSignUpButtonDisabled =>
+      email.isEmpty || password.isEmpty || confirmPassword.isEmpty || password != confirmPassword;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,7 +188,9 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    email = value;
+                  });
                 },
               ),
               const SizedBox(height: 15.0),
@@ -195,7 +204,9 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    password = value;
+                  });
                 },
               ),
               const SizedBox(height: 15.0),
@@ -209,12 +220,33 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                 ),
                 onChanged: (value) {
-                  setState(() {});
+                  setState(() {
+                    confirmPassword = value;
+                  });
                 },
               ),
               const SizedBox(height: 15.0),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: isSignUpButtonDisabled
+                    ? null
+                    : () {
+                        // Perform sign-up action here
+                        print("do sign-up action");
+
+                        // Show a toast message
+                        Fluttertoast.showToast(
+                          msg: 'Sign up successful!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+
+                        // Navigate back to the login page
+                        Navigator.pop(context);
+                      },
                 child: const Text('Sign Up'),
               ),
               const Spacer(),
@@ -225,6 +257,7 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 }
+
 
 enum Tab { house, message, person, car, trash }
 
