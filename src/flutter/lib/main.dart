@@ -13,7 +13,7 @@ class SmartAquariumApp extends StatefulWidget {
 }
 
 class _SmartAquariumAppState extends State<SmartAquariumApp> {
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
 
   @override
   Widget build(BuildContext context) {
