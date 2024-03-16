@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+
 void main() {
   runApp(const MaterialApp(
     home: ContentView(),
@@ -28,19 +29,29 @@ class _ContentViewState extends State<ContentView> {
   String name = '';
   String password = '';
   bool showPassword = false;
+  bool useSystemTheme = true; // Track if the system theme should be used
   bool isDarkTheme = false; // New variable to track the theme
 
   bool get isSignInButtonDisabled => _nameController.text.isEmpty || _passwordController.text.isEmpty;
 
   void toggleTheme() {
     setState(() {
+      if(useSystemTheme == isDarkTheme){
+      useSystemTheme = false;
       isDarkTheme = !isDarkTheme;
+      }
+      else if(useSystemTheme != isDarkTheme){
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeData = isDarkTheme ? ThemeData.dark() : ThemeData.light();
+    final Brightness platformBrightness = MediaQuery.of(context).platformBrightness;
+    final bool systemIsDark = platformBrightness == Brightness.dark;
+    final themeData = useSystemTheme ? (systemIsDark ? ThemeData.dark() : ThemeData.light()) : (isDarkTheme ? ThemeData.dark() : ThemeData.light());
 
     return MaterialApp(
       theme: themeData,
@@ -109,24 +120,24 @@ class _ContentViewState extends State<ContentView> {
                     onPressed: isSignInButtonDisabled
                         ? null
                         : () {
-                      Fluttertoast.showToast(
-                        msg: 'Sign in successful!',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
+                            Fluttertoast.showToast(
+                              msg: 'Sign in successful!',
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
 
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const PagesView(selectedTab: Tab.house),
-                      )).then((_) {
-                        _nameController.clear();
-                        _passwordController.clear();
-                        setState(() {});
-                      });
-                    },
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const PagesView(selectedTab: Tab.house),
+                            )).then((_) {
+                              _nameController.clear();
+                              _passwordController.clear();
+                              setState(() {});
+                            });
+                          },
                     child: const Text('Sign In'),
                   ),
                   const SizedBox(height: 15.0),
@@ -151,7 +162,7 @@ class _ContentViewState extends State<ContentView> {
                     ],
                   ),
                   IconButton(
-                    icon: Icon(isDarkTheme ? Icons.lightbulb : Icons.lightbulb_outline),
+                    icon: Icon(useSystemTheme ? Icons.lightbulb : (isDarkTheme ? Icons.lightbulb : Icons.lightbulb_outline)),
                     color: Colors.yellow,
                     onPressed: toggleTheme,
                   ),
@@ -164,6 +175,7 @@ class _ContentViewState extends State<ContentView> {
     );
   }
 }
+
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
