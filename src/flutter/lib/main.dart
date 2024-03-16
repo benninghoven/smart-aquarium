@@ -13,12 +13,11 @@ class SmartAquariumApp extends StatefulWidget {
 }
 
 class _SmartAquariumAppState extends State<SmartAquariumApp> {
-  bool _isDarkMode = true;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      themeMode: ThemeMode.system, // Match the system theme by default
+      darkTheme: ThemeData.dark(),
       home: const ContentView(),
     );
   }
