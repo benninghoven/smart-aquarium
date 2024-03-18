@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: FISHOLOGY
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - docker_network
+
+  generate_virtual_data:
+    image: python:alpine3.19
+    volumes:
+      - ./database/generate_virtual_data/:/app
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt && python main.py"
+    networks:
+      - docker_network
+    depends_on:
+      - database
+
+networks:
+  docker_network:
+    driver: bridge
