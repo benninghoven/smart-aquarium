@@ -5,13 +5,21 @@ void main() {
   runApp(const SmartAquariumApp());
 }
 
-class SmartAquariumApp extends StatelessWidget {
-  const SmartAquariumApp({super.key});
+class SmartAquariumApp extends StatefulWidget {
+  const SmartAquariumApp({Key? key}) : super(key: key);
+
+  @override
+  _SmartAquariumAppState createState() => _SmartAquariumAppState();
+}
+
+class _SmartAquariumAppState extends State<SmartAquariumApp> {
+  bool _isDarkMode = false;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ContentView(),
+    return MaterialApp(
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: const ContentView(),
     );
   }
 }
