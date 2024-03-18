@@ -6,11 +6,15 @@ class SecondScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true, // Disable the back arrow
+        title: const Text('Water Hardness'),
+      ),
       body: Container(
         color: Colors.green[100], // Change the color to mint or any desired color
         child: const Center(
           child: Text(
-            'Second Screen',
+            'Water Hardness: 1',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 32,

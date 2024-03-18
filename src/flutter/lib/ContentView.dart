@@ -1,46 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:flutter_application_1/FirstScreen.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: ContentView(),
-  ));
+  runApp(MyApp());
 }
 
-class AuthManager extends ChangeNotifier {
-  // Implement your AuthManager class
-  // ...
-}
-
-class ContentView extends StatefulWidget {
-  const ContentView({Key? key}) : super(key: key);
-
+class MyApp extends StatefulWidget {
   @override
-  _ContentViewState createState() => _ContentViewState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _ContentViewState extends State<ContentView> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  AuthManager authManager = AuthManager();
-  String name = '';
-  String password = '';
-  bool showPassword = false;
+class _MyAppState extends State<MyApp> {
   bool useSystemTheme = true; // Track if the system theme should be used
   bool isDarkTheme = false; // New variable to track the theme
 
-  bool get isSignInButtonDisabled => _nameController.text.isEmpty || _passwordController.text.isEmpty;
-
   void toggleTheme() {
     setState(() {
-      if(useSystemTheme == isDarkTheme){
-      useSystemTheme = false;
-      isDarkTheme = !isDarkTheme;
-      }
-      else if(useSystemTheme != isDarkTheme){
+      if (useSystemTheme == isDarkTheme) {
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      } else if (useSystemTheme != isDarkTheme) {
         useSystemTheme = false;
         isDarkTheme = !isDarkTheme;
       }
@@ -55,119 +36,152 @@ class _ContentViewState extends State<ContentView> {
 
     return MaterialApp(
       theme: themeData,
-      home: Scaffold(
-        body: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      hintText: 'Username',
-                      labelText: 'Username',
-                      labelStyle: const TextStyle(color: Colors.blue),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
+      home: ContentView(toggleTheme: toggleTheme),
+    );
+  }
+}
+
+class AuthManager extends ChangeNotifier {
+  // Implement your AuthManager class
+  // ...
+}
+
+class ContentView extends StatefulWidget {
+  final VoidCallback toggleTheme;
+
+  const ContentView({Key? key, required this.toggleTheme}) : super(key: key);
+
+  @override
+  _ContentViewState createState() => _ContentViewState();
+}
+
+class _ContentViewState extends State<ContentView> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  AuthManager authManager = AuthManager();
+  String name = '';
+  String password = '';
+  bool showPassword = false;
+  bool isDarkTheme = false; // New variable to track the theme
+
+  bool get isSignInButtonDisabled =>
+      _nameController.text.isEmpty || _passwordController.text.isEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: 'Username',
+                    labelText: 'Username',
+                    labelStyle: const TextStyle(color: Colors.blue),
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        name = value;
-                      });
-                    },
                   ),
-                  const SizedBox(height: 15.0),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _passwordController,
-                          obscureText: !showPassword,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            labelText: 'Password',
-                            labelStyle: const TextStyle(color: Colors.red),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.red),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
+                  onChanged: (value) {
+                    setState(() {
+                      name = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 15.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: !showPassword,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          labelText: 'Password',
+                          labelStyle: const TextStyle(color: Colors.red),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              password = value;
-                            });
-                          },
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
-                        color: Colors.red,
-                        onPressed: () {
+                        onChanged: (value) {
                           setState(() {
-                            showPassword = !showPassword;
+                            password = value;
                           });
                         },
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 15.0),
-                  ElevatedButton(
-                    onPressed: isSignInButtonDisabled
-                        ? null
-                        : () {
-                            Fluttertoast.showToast(
-                              msg: 'Sign in successful!',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.green,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
-
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const PagesView(selectedTab: Tab.house),
-                            )).then((_) {
-                              _nameController.clear();
-                              _passwordController.clear();
-                              setState(() {});
-                            });
-                          },
-                    child: const Text('Sign In'),
-                  ),
-                  const SizedBox(height: 15.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Don't have an account?"),
-                      TextButton(
-                        onPressed: () {
-                          _nameController.clear();
-                          _passwordController.clear();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const SignUpView()),
+                    ),
+                    IconButton(
+                      icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
+                      color: Colors.red,
+                      onPressed: () {
+                        setState(() {
+                          showPassword = !showPassword;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15.0),
+                ElevatedButton(
+                  onPressed: isSignInButtonDisabled
+                      ? null
+                      : () {
+                          Fluttertoast.showToast(
+                            msg: 'Sign in successful!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
                           );
+
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const PagesView(selectedTab: Tab.house),
+                          )).then((_) {
+                            _nameController.clear();
+                            _passwordController.clear();
+                            setState(() {});
+                          });
                         },
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(color: Colors.blue),
-                        ),
+                  child: const Text('Sign In'),
+                ),
+                const SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        _nameController.clear();
+                        _passwordController.clear();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SignUpView()),
+                        );
+                      },
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(color: Colors.blue),
                       ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: Icon(useSystemTheme ? Icons.lightbulb : (isDarkTheme ? Icons.lightbulb : Icons.lightbulb_outline)),
-                    color: Colors.yellow,
-                    onPressed: toggleTheme,
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  icon: Icon(widget.toggleTheme == null ? Icons.lightbulb : (isDarkTheme ? Icons.lightbulb : Icons.lightbulb_outline)),
+                  color: Colors.yellow,
+                  onPressed: widget.toggleTheme,
+                ),
+              ],
             ),
           ),
         ),
@@ -175,7 +189,6 @@ class _ContentViewState extends State<ContentView> {
     );
   }
 }
-
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -257,20 +270,20 @@ class _SignUpViewState extends State<SignUpView> {
                 onPressed: isSignUpButtonDisabled
                     ? null
                     : () {
-                  print("do sign-up action");
+                        print("do sign-up action");
 
-                  Fluttertoast.showToast(
-                    msg: 'Sign up successful!',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.green,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
+                        Fluttertoast.showToast(
+                          msg: 'Sign up successful!',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
 
-                  Navigator.pop(context);
-                },
+                        Navigator.pop(context);
+                      },
                 child: const Text('Sign Up'),
               ),
               const Spacer(),
@@ -345,24 +358,7 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
   }
 }
 
-class FirstScreen extends StatelessWidget {
-  const FirstScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('First Screen'),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to the First Screen!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
 
 class SecondScreen extends StatelessWidget {
   const SecondScreen({Key? key}) : super(key: key);

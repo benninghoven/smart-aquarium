@@ -1,24 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ContentView.dart';
+import 'ContentView.dart'; // Importing the ContentView widget from ContentView.dart
 
 void main() {
-  runApp(const SmartAquariumApp());
+  runApp(const MyApp());
 }
 
-class SmartAquariumApp extends StatefulWidget {
-  const SmartAquariumApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  _SmartAquariumAppState createState() => _SmartAquariumAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _SmartAquariumAppState extends State<SmartAquariumApp> {
+class _MyAppState extends State<MyApp> {
+  bool useSystemTheme = true;
+  bool isDarkTheme = false;
+
+  void toggleTheme() {
+    setState(() {
+      if (useSystemTheme == isDarkTheme) {
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      } else if (useSystemTheme != isDarkTheme) {
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Brightness platformBrightness = MediaQuery.of(context).platformBrightness;
+    final bool systemIsDark = platformBrightness == Brightness.dark;
+    final ThemeData themeData = useSystemTheme ? (systemIsDark ? ThemeData.dark() : ThemeData.light()) : (isDarkTheme ? ThemeData.dark() : ThemeData.light());
+
     return MaterialApp(
-      themeMode: ThemeMode.system, // Match the system theme by default
-      darkTheme: ThemeData.dark(),
-      home: const ContentView(),
+      theme: themeData,
+      home: ContentView(toggleTheme: toggleTheme), // Providing toggleTheme parameter
     );
   }
 }

@@ -1,28 +1,65 @@
 import 'package:flutter/material.dart';
+import 'SecondScreen.dart';
 
 class FirstScreen extends StatelessWidget {
-  const FirstScreen({super.key});
+  const FirstScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true, 
+        title: const Text('First Screeen'),
+      ),
       body: Stack(
         children: [
-          const Positioned.fill(
+          Positioned.fill(
             child: Center(
-              child: Text(
-                'First Screen',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
-                ),
-              ),
             ),
           ),
           Positioned.fill(
-            child: Image.asset(
-              'assets/ocean.jpg', // Replace 'ocean.jpg' with your actual image asset path
-              fit: BoxFit.cover,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CircleButton(
+                        label: 'Water Hardness',
+                        number: '1',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SecondScreen()),
+                          );
+                        },
+                      ),
+                      CircleButton(
+                        label: 'PH',
+                        number: '2',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SecondScreen()),
+                          );
+                        },
+                      ),
+                      CircleButton(
+                        label: 'Temperature',
+                        number: '3',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SecondScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -31,14 +68,53 @@ class FirstScreen extends StatelessWidget {
   }
 }
 
-class FirstScreen_Previews extends StatelessWidget {
-  const FirstScreen_Previews({super.key});
+class CircleButton extends StatelessWidget {
+  final String label;
+  final String number;
+  final VoidCallback onTap;
+
+  const CircleButton({
+    required this.label,
+    required this.number,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: FirstScreen(),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final circleSize = screenWidth * 0.25; // Adjust size as needed
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: circleSize,
+            height: circleSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.blue.withOpacity(0.5),
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 8), // Adjust spacing as needed
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ],
       ),
     );
   }
