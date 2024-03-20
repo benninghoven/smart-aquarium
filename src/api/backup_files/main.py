@@ -11,6 +11,7 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)'''
 # when doing db things make sure to have in a try/escept statement
 
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == "POST":
@@ -31,9 +32,9 @@ def index():
         return render_template("results.html", tasks=query_result)
     else:
         return render_template("results.html", tasks=[])
-    
 
 # account logins and creation
+
 
 @app.route('/get_login', methods=['GET'])
 def get_login():

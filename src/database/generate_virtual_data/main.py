@@ -40,6 +40,14 @@ def main():
         time.sleep(5)
 
     if conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM SENSOR_READINGS")
+        count = cursor.fetchone()[0]
+        cursor.close()
+        if count > 0:
+            print("Database already has data. Not populating with simulated data")
+            conn.close()
+            return
         print("POPULATING DATABASE WITH SIMULATED DATA")
         generator = SensorGenerator()
         MINUTES = 14400
@@ -62,6 +70,7 @@ def main():
 
         conn.close()
         print("100%  done")
+        return
 
 
 if __name__ == "__main__":
