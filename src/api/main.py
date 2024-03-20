@@ -1,40 +1,30 @@
-import mysql.connector
+from flask import Flask, jsonify
+from sql_helpers import connect_to_mysql, execute_query, query_to_json
+
+app = Flask(__name__)
 
 
-def connect_to_mysql():
-    try:
-        conn = mysql.connector.connect(
-            host="0.0.0.0",
-            user="root",
-            password="root",
-            database="FISHOLOGY",
-            port="3306",
-        )
-        print("Connected to MySQL")
-        return conn
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
-
-
-def execute_query(conn, query):
-    try:
-        cursor = conn.cursor()
-        cursor.execute(query)
-        conn.commit()
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-
-
-def main():
-
+@app.route("/get_latest_readings", methods=["GET"])
+def get_latest_readings():
     conn = connect_to_mysql()
     if conn:
-        print("Connected to MySQL")
+        latest_readings_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS ORDER BY timestp DESC LIMIT 1;"""
+        result = query_to_json(conn, latest_readings_query)
+        conn.close()
+        return jsonify(result)
+    return jsonify({"error": "Could not connect to MySQL"})
 
-    conn.close()
-    print("100%  done")
+
+@app.route("/get_all_readings", methods=["GET"])
+def get_all_readings():
+    conn = connect_to_mysql()
+    if conn:
+        everything_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS;"""
+        everything_result = query_to_json(conn, everything_query)
+        conn.close()
+        return jsonify(everything_result)
+    return jsonify({"error": "Could not connect to MySQL"})
 
 
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=5000, debug=True)
