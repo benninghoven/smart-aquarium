@@ -443,30 +443,65 @@ class FifthScreen extends StatelessWidget {
 class MyTabBar extends StatelessWidget {
   final Tab selectedTab;
   final ValueChanged<Tab> onTabChanged;
+  final double tabBarHeightPercentage; // Added tabBarHeightPercentage parameter
 
-  const MyTabBar({Key? key, required this.selectedTab, required this.onTabChanged}) : super(key: key);
+  const MyTabBar({
+    Key? key,
+    required this.selectedTab,
+    required this.onTabChanged,
+    this.tabBarHeightPercentage = 0.1, // Default percentage set to 8%
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          buildTabIcon(Icons.home, Tab.house),
-          buildTabIcon(FontAwesomeIcons.fish, Tab.message),
-          buildTabIcon(Icons.person, Tab.person),
-          buildTabIcon(Icons.directions_car, Tab.car),
-          buildTabIcon(Icons.delete, Tab.trash),
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double tabBarHeight = screenHeight * tabBarHeightPercentage;
+
+    return Container(
+      height: tabBarHeight,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4,
+            offset: Offset(0, -2),
+          ),
         ],
+      ),
+      child: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        currentIndex: selectedTab.index,
+        onTap: (index) => onTabChanged(Tab.values[index]),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(FontAwesomeIcons.fish),
+            label: 'Fish',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Person',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_car),
+            label: 'Car',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delete),
+            label: 'Delete',
+          ),
+        ],
+        type: BottomNavigationBarType.fixed,
+        elevation: 0, // Remove the default elevation
       ),
     );
   }
-
-  IconButton buildTabIcon(IconData icon, Tab tab) {
-    return IconButton(
-      icon: Icon(icon),
-      onPressed: () => onTabChanged(tab),
-      color: selectedTab == tab ? Colors.blue : Colors.grey,
-    );
-  }
 }
+

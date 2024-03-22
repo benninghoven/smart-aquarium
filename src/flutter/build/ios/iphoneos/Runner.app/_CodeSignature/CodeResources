@@ -46,7 +46,7 @@
 		</data>
 		<key>Frameworks/App.framework/App</key>
 		<data>
-		mW4d8QvR1zTHzjkXRY0mXMDK2os=
+		vHDNwf30ZpFo1KLkXDPgjSvosBw=
 		</data>
 		<key>Frameworks/App.framework/Info.plist</key>
 		<data>
@@ -202,7 +202,7 @@
 		</data>
 		<key>Frameworks/Toast.framework/Toast</key>
 		<data>
-		R5zgUPbhhAYKtUxwTDo42czYwiQ=
+		glfUCXa794ZXC62/tr/c/PgR36s=
 		</data>
 		<key>Frameworks/Toast.framework/_CodeSignature/CodeResources</key>
 		<data>
@@ -218,7 +218,7 @@
 		</data>
 		<key>Frameworks/fluttertoast.framework/fluttertoast</key>
 		<data>
-		eCFhdod4eyvlwQ7p+nLoyJO1YvI=
+		R27uId6MrTKPWYJiP0WLApD5ZrU=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -309,7 +309,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ajAwy+K670k+41Snsu5j+AQ+binfB0w+YnR98N5Iby8=
+			TuSO4sTbiYiVLz2K0639RbBplb0Y+OtdO9By2ybx2+8=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/Info.plist</key>
@@ -582,7 +582,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			aN6RcSokmf0woiFksGHS+2Tp2aJn/AlsSFsZyayfk3w=
+			IduPade4ANqQjBZWbB90OnKo0Kre3diDELrcWL58S4w=
 			</data>
 		</dict>
 		<key>Frameworks/Toast.framework/_CodeSignature/CodeResources</key>
@@ -610,7 +610,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qFdOHQw3psD0Vk/vF5H6ed875AxP3brrHxUsqqx27fc=
+			TW0JyfLRlOUnF/5nbwIdzhhUiobRNZFUJtFx38XiDiE=
 			</data>
 		</dict>
 		<key>embedded.mobileprovision</key>
