@@ -1,4 +1,4 @@
-import 'dart:convert'; 
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthResponse {
@@ -6,7 +6,7 @@ class AuthResponse {
   // other properties you expect in the response
 
   AuthResponse({required this.success});
-  
+
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
       success: json['success'],
@@ -17,10 +17,12 @@ class AuthResponse {
 
 class AuthManager {
   // ... other properties
-  
-  Future<void> login(String name, String password, Function(bool) completion) async {
-    const loginEndpoint = 'https://yourapi.com/login'; // Replace with your actual API endpoint
-    
+
+  Future<void> login(
+      String name, String password, Function(bool) completion) async {
+    const loginEndpoint =
+        'https://yourapi.com/login'; // Replace with your actual API endpoint
+
     try {
       final response = await http.post(
         Uri.parse(loginEndpoint),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'SecondScreen.dart';
+import 'ThirdScreen.dart';
+import 'FourthScreen.dart';
 
 class FirstScreen extends StatelessWidget {
   const FirstScreen({Key? key}) : super(key: key);
@@ -56,7 +58,8 @@ class FirstScreen extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SecondScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => SecondScreen()),
                             );
                           },
                         ),
@@ -67,7 +70,8 @@ class FirstScreen extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SecondScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => ThirdScreen()),
                             );
                           },
                         ),
@@ -78,7 +82,8 @@ class FirstScreen extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SecondScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => FourthScreen()),
                             );
                           },
                         ),
