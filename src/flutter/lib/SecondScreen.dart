@@ -15,7 +15,9 @@ class SecondScreen extends StatelessWidget {
   // Pass a list of WaterData objects to getChartData
   List<FlSpot> getChartData(List<WaterData> dataPoints) {
     // Convert WaterData objects to FlSpot objects
-    List<FlSpot> chartData = dataPoints.map((data) => FlSpot(data.timestamp.toDouble(), data.waterHardness)).toList();
+    List<FlSpot> chartData = dataPoints
+        .map((data) => FlSpot(data.timestamp.toDouble(), data.waterHardness))
+        .toList();
     return chartData;
   }
 

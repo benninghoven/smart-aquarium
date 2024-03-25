@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 IconData fishIcon = FontAwesomeIcons.fish;
 
 enum Tab { house, fishIcon, person, car, trash }
@@ -8,7 +9,8 @@ class MyTabBar extends StatelessWidget {
   final Tab selectedTab;
   final Function(Tab) onTabChanged;
 
-  const MyTabBar({super.key, required this.selectedTab, required this.onTabChanged});
+  const MyTabBar(
+      {super.key, required this.selectedTab, required this.onTabChanged});
 
   String _getFillImage(Tab tab) {
     return '${tab.toString().split('.').last}.fill';
@@ -34,7 +36,8 @@ class MyTabBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    (selectedTab == tab ? Icons.home : _getFillImage(tab)) as IconData?,
+                    (selectedTab == tab ? Icons.home : _getFillImage(tab))
+                        as IconData?,
                     size: selectedTab == tab ? 30 : 22,
                     color: selectedTab == tab ? Colors.red : Colors.grey,
                   ),

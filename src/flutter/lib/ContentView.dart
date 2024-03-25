@@ -30,9 +30,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final Brightness platformBrightness = MediaQuery.of(context).platformBrightness;
+    final Brightness platformBrightness =
+        MediaQuery.of(context).platformBrightness;
     final bool systemIsDark = platformBrightness == Brightness.dark;
-    final themeData = useSystemTheme ? (systemIsDark ? ThemeData.dark() : ThemeData.light()) : (isDarkTheme ? ThemeData.dark() : ThemeData.light());
+    final themeData = useSystemTheme
+        ? (systemIsDark ? ThemeData.dark() : ThemeData.light())
+        : (isDarkTheme ? ThemeData.dark() : ThemeData.light());
 
     return MaterialApp(
       theme: themeData,
@@ -120,7 +123,9 @@ class _ContentViewState extends State<ContentView> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
+                      icon: Icon(showPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility),
                       color: Colors.red,
                       onPressed: () {
                         setState(() {
@@ -145,9 +150,12 @@ class _ContentViewState extends State<ContentView> {
                             fontSize: 16.0,
                           );
 
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const PagesView(selectedTab: Tab.house),
-                          )).then((_) {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(
+                            builder: (context) =>
+                                const PagesView(selectedTab: Tab.house),
+                          ))
+                              .then((_) {
                             _nameController.clear();
                             _passwordController.clear();
                             setState(() {});
@@ -166,7 +174,8 @@ class _ContentViewState extends State<ContentView> {
                         _passwordController.clear();
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SignUpView()),
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpView()),
                         );
                       },
                       child: const Text(
@@ -177,7 +186,11 @@ class _ContentViewState extends State<ContentView> {
                   ],
                 ),
                 IconButton(
-                  icon: Icon(widget.toggleTheme == null ? Icons.lightbulb : (isDarkTheme ? Icons.lightbulb : Icons.lightbulb_outline)),
+                  icon: Icon(widget.toggleTheme == null
+                      ? Icons.lightbulb
+                      : (isDarkTheme
+                          ? Icons.lightbulb
+                          : Icons.lightbulb_outline)),
                   color: Colors.yellow,
                   onPressed: widget.toggleTheme,
                 ),
@@ -203,7 +216,10 @@ class _SignUpViewState extends State<SignUpView> {
   String confirmPassword = '';
 
   bool get isSignUpButtonDisabled =>
-      email.isEmpty || password.isEmpty || confirmPassword.isEmpty || password != confirmPassword;
+      email.isEmpty ||
+      password.isEmpty ||
+      confirmPassword.isEmpty ||
+      password != confirmPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +322,8 @@ class PagesView extends StatefulWidget {
   _PagesViewState createState() => _PagesViewState();
 }
 
-class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMixin {
+class _PagesViewState extends State<PagesView>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -357,8 +374,6 @@ class _PagesViewState extends State<PagesView> with SingleTickerProviderStateMix
     );
   }
 }
-
-
 
 class SecondScreen extends StatelessWidget {
   const SecondScreen({Key? key}) : super(key: key);
@@ -504,4 +519,3 @@ class MyTabBar extends StatelessWidget {
     );
   }
 }
-
