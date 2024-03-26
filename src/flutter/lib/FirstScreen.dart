@@ -1,10 +1,52 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'SecondScreen.dart';
 import 'ThirdScreen.dart';
 import 'FourthScreen.dart';
 
-class FirstScreen extends StatelessWidget {
+class FirstScreen extends StatefulWidget {
   const FirstScreen({Key? key}) : super(key: key);
+
+  @override
+  _FirstScreenState createState() => _FirstScreenState();
+}
+
+class _FirstScreenState extends State<FirstScreen> {
+  List<Color> gradientColors = [Colors.blue, Colors.green];
+  List<double> waterHardnessData = [];
+  List<double> pHData = [];
+  List<double> temperatureData = [];
+
+  Future<void> fetchDataFromApi() async {
+    // Replace this URL with your actual API endpoint
+    String apiUrl = 'https://api.example.com/data';
+
+    try {
+      var response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        setState(() {
+          waterHardnessData.add(jsonData['water_hardness']);
+          pHData.add(jsonData['ph']);
+          temperatureData.add(jsonData['temperature']);
+        });
+      } else {
+        throw Exception('Failed to load data from API');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDataFromApi();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +95,9 @@ class FirstScreen extends StatelessWidget {
                       children: [
                         CircleButton(
                           label: 'Water Hardness',
-                          number: '1',
+                          number: waterHardnessData.isNotEmpty
+                              ? waterHardnessData.last.toString()
+                              : '-',
                           icon: Icons.opacity, // Example icon
                           onTap: () {
                             Navigator.push(
@@ -65,7 +109,9 @@ class FirstScreen extends StatelessWidget {
                         ),
                         CircleButton(
                           label: 'PH',
-                          number: '2',
+                          number: pHData.isNotEmpty
+                              ? pHData.last.toString()
+                              : '-',
                           icon: Icons.category, // Example icon
                           onTap: () {
                             Navigator.push(
@@ -77,7 +123,9 @@ class FirstScreen extends StatelessWidget {
                         ),
                         CircleButton(
                           label: 'Temperature',
-                          number: '3',
+                          number: temperatureData.isNotEmpty
+                              ? temperatureData.last.toString()
+                              : '-',
                           icon: Icons.thermostat, // Example icon
                           onTap: () {
                             Navigator.push(

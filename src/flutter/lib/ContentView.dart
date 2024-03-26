@@ -504,14 +504,6 @@ class MyTabBar extends StatelessWidget {
             icon: Icon(Icons.person),
             label: 'Person',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'Car',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.delete),
-            label: 'Delete',
-          ),
         ],
         type: BottomNavigationBarType.fixed,
         elevation: 0, // Remove the default elevation

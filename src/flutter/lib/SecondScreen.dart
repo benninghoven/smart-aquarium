@@ -27,10 +27,14 @@ class SecondScreen extends StatelessWidget {
     List<WaterData> dataPoints = [
       WaterData(1, 10.0),
       WaterData(2, 15.0),
-      WaterData(3, 20.0),
-      WaterData(4, 25.0),
+      WaterData(3, 10.0),
+      WaterData(4, 20.0),
       WaterData(5, 30.0),
+      WaterData(6, 30.0),
+      WaterData(7, 30.0),
     ];
+
+    
 
     List<FlSpot> data = getChartData(dataPoints);
 
@@ -41,58 +45,65 @@ class SecondScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: LineChart(
-            LineChartData(
-              gridData: FlGridData(show: false),
-              titlesData: FlTitlesData(
-                show: true,
-                bottomTitles: SideTitles(
-                  showTitles: true,
-                  getTitles: (value) {
-                    // Customize the bottom axis labels based on timestamp
-                    switch (value.toInt()) {
-                      case 1:
-                        return 'Day 1';
-                      case 2:
-                        return 'Day 2';
-                      case 3:
-                        return 'Day 3';
-                      case 4:
-                        return 'Day 4';
-                      case 5:
-                        return 'Day 5';
-                      default:
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8, // Adjust the width here
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: SideTitles(
+                    showTitles: true,
+                    getTitles: (value) {
+                      // Customize the bottom axis labels based on timestamp
+                      switch (value.toInt()) {
+                        case 1:
+                          return 'Day 1';
+                        case 2:
+                          return 'Day 2';
+                        case 3:
+                          return 'Day 3';
+                        case 4:
+                          return 'Day 4';
+                        case 5:
+                          return 'Day 5';
+                        case 6:
+                          return 'Day 6';
+                        case 7:
+                          return 'Day 7';
+                        default:
+                          return '';
+                      }
+                    },
+                  ),
+                  leftTitles: SideTitles(
+                    showTitles: true,
+                    getTitles: (value) {
+                      // Customize the left axis labels based on water hardness values
+                      if (value % 10 == 0) {
+                        return value.toInt().toString();
+                      } else {
                         return '';
-                    }
-                  },
+                      }
+                    },
+                  ),
                 ),
-                leftTitles: SideTitles(
-                  showTitles: true,
-                  getTitles: (value) {
-                    // Customize the left axis labels based on water hardness values
-                    if (value % 10 == 0) {
-                      return value.toInt().toString();
-                    } else {
-                      return '';
-                    }
-                  },
-                ),
+                borderData: FlBorderData(show: true),
+                minX: 1,
+                maxX: 7,
+                minY: 0,
+                maxY: 40, // Adjust maxY as needed based on your data
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: data,
+                    isCurved: true,
+                    colors: gradientColors,
+                    barWidth: 5,
+                    isStrokeCapRound: true,
+                    belowBarData: BarAreaData(show: true),
+                  ),
+                ],
               ),
-              borderData: FlBorderData(show: false),
-              minX: 0,
-              maxX: 6,
-              minY: 0,
-              maxY: 40, // Adjust maxY as needed based on your data
-              lineBarsData: [
-                LineChartBarData(
-                  spots: data,
-                  isCurved: true,
-                  colors: gradientColors,
-                  barWidth: 5,
-                  isStrokeCapRound: true,
-                  belowBarData: BarAreaData(show: false),
-                ),
-              ],
             ),
           ),
         ),
