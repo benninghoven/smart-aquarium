@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import "FetchAllReadings.dart";
 
 // Define a model class for your data points
 class WaterData {
   final int timestamp;
-  final double waterHardness;
+  final double ppm;
 
-  WaterData(this.timestamp, this.waterHardness);
+  WaterData(this.timestamp, this.ppm);
 }
+
+
 
 class SecondScreen extends StatelessWidget {
   final List<Color> gradientColors = [Colors.blue, Colors.green];
@@ -16,25 +21,25 @@ class SecondScreen extends StatelessWidget {
   List<FlSpot> getChartData(List<WaterData> dataPoints) {
     // Convert WaterData objects to FlSpot objects
     List<FlSpot> chartData = dataPoints
-        .map((data) => FlSpot(data.timestamp.toDouble(), data.waterHardness))
+        .map((data) => FlSpot(data.timestamp.toDouble(), data.ppm))
         .toList();
     return chartData;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Example data points
+
+
+    FetchAllReadings().then((value) {
+      var jsonResponse = json.decode(value.body);
+      var topTen = jsonResponse.sublist(0, 10);
+      print(topTen);
+    });
+
     List<WaterData> dataPoints = [
-      WaterData(1, 10.0),
-      WaterData(2, 15.0),
-      WaterData(3, 10.0),
-      WaterData(4, 20.0),
-      WaterData(5, 30.0),
-      WaterData(6, 30.0),
       WaterData(7, 30.0),
     ];
 
-    
 
     List<FlSpot> data = getChartData(dataPoints);
 
