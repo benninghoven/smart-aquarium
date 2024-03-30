@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'SecondScreen.dart';
-import 'ThirdScreen.dart';
-import 'FourthScreen.dart';
+import 'PPM_Graphs.dart';
+import 'PH.dart';
+import 'Temperature.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({Key? key}) : super(key: key);

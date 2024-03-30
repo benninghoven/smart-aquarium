@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'SignUp.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_application_1/FirstScreen.dart';
+import 'package:flutter_application_1/Home.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -39,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       theme: themeData,
-      home: ContentView(toggleTheme: toggleTheme),
+      home: Login(toggleTheme: toggleTheme),
     );
   }
 }
@@ -49,16 +52,16 @@ class AuthManager extends ChangeNotifier {
   // ...
 }
 
-class ContentView extends StatefulWidget {
+class Login extends StatefulWidget {
   final VoidCallback toggleTheme;
 
-  const ContentView({Key? key, required this.toggleTheme}) : super(key: key);
+  const Login({Key? key, required this.toggleTheme}) : super(key: key);
 
   @override
-  _ContentViewState createState() => _ContentViewState();
+  _LoginViewState createState() => _LoginViewState();
 }
 
-class _ContentViewState extends State<ContentView> {
+class _LoginViewState extends State<Login> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -203,115 +206,9 @@ class _ContentViewState extends State<ContentView> {
   }
 }
 
-class SignUpView extends StatefulWidget {
-  const SignUpView({Key? key}) : super(key: key);
 
-  @override
-  _SignUpViewState createState() => _SignUpViewState();
-}
 
-class _SignUpViewState extends State<SignUpView> {
-  String email = '';
-  String password = '';
-  String confirmPassword = '';
-
-  bool get isSignUpButtonDisabled =>
-      email.isEmpty ||
-      password.isEmpty ||
-      confirmPassword.isEmpty ||
-      password != confirmPassword;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Spacer(),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Username',
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 15.0),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.red),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 15.0),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Confirm Password',
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.red),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    confirmPassword = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 15.0),
-              ElevatedButton(
-                onPressed: isSignUpButtonDisabled
-                    ? null
-                    : () {
-                        print("do sign-up action");
-
-                        Fluttertoast.showToast(
-                          msg: 'Sign up successful!',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-
-                        Navigator.pop(context);
-                      },
-                child: const Text('Sign Up'),
-              ),
-              const Spacer(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-enum Tab { house, message, person, car, trash }
+enum Tab { house, message, person, }
 
 class PagesView extends StatefulWidget {
   final Tab selectedTab;
@@ -354,8 +251,6 @@ class _PagesViewState extends State<PagesView>
               FirstScreen(),
               SecondScreen(),
               ThirdScreen(),
-              FourthScreen(),
-              FifthScreen(),
             ],
           ),
           Align(
@@ -375,8 +270,26 @@ class _PagesViewState extends State<PagesView>
   }
 }
 
+
 class SecondScreen extends StatelessWidget {
   const SecondScreen({Key? key}) : super(key: key);
+
+  Future fetchData() async {
+    var apiUrl = 'http://localhost:5000/get_latest_readings'; // Replace with your API endpoint
+    var response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      var jsonData = json.decode(response.body);
+
+      print(jsonData); // You can process the data further here
+      return jsonData;
+    } else {
+      // If the server did not return a 200 OK response, handle the error accordingly
+      print('Failed to load data: ${response.statusCode}');
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -385,15 +298,29 @@ class SecondScreen extends StatelessWidget {
         automaticallyImplyLeading: false, // Disable the back arrow
         title: const Text('Second Screen'),
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Second Screen!',
-          style: TextStyle(fontSize: 24),
+      body: Center(
+        child: FutureBuilder(
+          future: fetchData(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show a loading indicator while fetching data
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // Data has been fetched successfully
+              var data = snapshot.data;
+              return Text(
+                data != null ? data.toString() : 'No data available',
+                style: TextStyle(fontSize: 24),
+              );
+            }
+          },
         ),
       ),
     );
   }
 }
+
 
 class ThirdScreen extends StatelessWidget {
   const ThirdScreen({Key? key}) : super(key: key);
@@ -415,45 +342,9 @@ class ThirdScreen extends StatelessWidget {
   }
 }
 
-class FourthScreen extends StatelessWidget {
-  const FourthScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Disable the back arrow
-        title: const Text('Fourth Screen'),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Fourth Screen!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
 
-class FifthScreen extends StatelessWidget {
-  const FifthScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Disable the back arrow
-        title: const Text('Fifth Screen'),
-      ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Fifth Screen!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
 
 class MyTabBar extends StatelessWidget {
   final Tab selectedTab;
