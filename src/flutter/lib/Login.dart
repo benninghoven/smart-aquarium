@@ -52,6 +52,7 @@ class AuthManager extends ChangeNotifier {
   // ...
 }
 
+
 class Login extends StatefulWidget {
   final VoidCallback toggleTheme;
 
@@ -85,58 +86,72 @@ class _LoginViewState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Username',
-                    labelText: 'Username',
-                    labelStyle: const TextStyle(color: Colors.blue),
-                    border: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                Text(
+                  'Smart Aquarium',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      name = value;
-                    });
-                  },
+                ),
+                const SizedBox(height: 20.0), // Add spacing below the large text
+                FractionallySizedBox(
+                  widthFactor: 0.9, // Adjust this value as needed
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: 'Username',
+                      labelText: 'Username',
+                      labelStyle: const TextStyle(color: Colors.blue),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        name = value;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(height: 15.0),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: !showPassword,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          labelText: 'Password',
-                          labelStyle: const TextStyle(color: Colors.red),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(10.0),
+                FractionallySizedBox(
+                  widthFactor: 0.9, // Adjust this value as needed
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _passwordController,
+                          obscureText: !showPassword,
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            labelText: 'Password',
+                            labelStyle: const TextStyle(color: Colors.red),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
                         ),
-                        onChanged: (value) {
+                      ),
+                      IconButton(
+                        icon: Icon(showPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        color: Colors.red,
+                        onPressed: () {
                           setState(() {
-                            password = value;
+                            showPassword = !showPassword;
                           });
                         },
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(showPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                      color: Colors.red,
-                      onPressed: () {
-                        setState(() {
-                          showPassword = !showPassword;
-                        });
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 15.0),
                 ElevatedButton(
@@ -166,7 +181,7 @@ class _LoginViewState extends State<Login> {
                         },
                   child: const Text('Sign In'),
                 ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 0.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
