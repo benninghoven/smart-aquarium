@@ -4,14 +4,14 @@ from sql_helpers import connect_to_mysql, execute_query, query_to_json
 app = Flask(__name__)
 
 
-@app.route("/get_latest_readings", methods=["GET"])
+@app.route("/get_latest_reading", methods=["GET"])
 def get_latest_readings():
     conn = connect_to_mysql()
     if conn:
         latest_readings_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS ORDER BY timestp DESC LIMIT 1;"""
         result = query_to_json(conn, latest_readings_query)
         conn.close()
-        return jsonify(result)
+        return jsonify(result[0])
     return jsonify({"error": "Could not connect to MySQL"})
 
 

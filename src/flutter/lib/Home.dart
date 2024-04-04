@@ -5,6 +5,49 @@ import 'PPM_Graphs.dart';
 import 'PH.dart';
 import 'Temperature.dart';
 
+class Reading {
+  final String timestp;
+  final double water_temp;
+  final int PPM;
+  final double pH;
+
+  const Reading({
+    required this.timestp,
+    required this.water_temp,
+    required this.PPM,
+    required this.pH,
+  });
+
+  factory Reading.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'timestp': String timestp,
+        'water_temp': double water_temp,
+        'PPM': int PPM,
+        'pH': double pH,
+      } =>
+        Reading(
+            timestp: timestp,
+            water_temp: water_temp,
+            PPM: PPM,
+            pH: pH,
+        ),
+      _ => throw const FormatException('Failed to load reading.'),
+    };
+  }
+}
+
+Future<Reading> fetchReading() async {
+  final response = await http
+      .get(Uri.parse('http://localhost:5000/get_latest_reading'));
+
+  if (response.statusCode == 200) {
+    return Reading.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    throw Exception('Failed to load reading');
+  }
+}
+
 class FirstScreen extends StatefulWidget {
   const FirstScreen({Key? key}) : super(key: key);
 
@@ -18,34 +61,13 @@ class _FirstScreenState extends State<FirstScreen> {
   List<double> pHData = [];
   List<double> temperatureData = [];
 
-  Future<void> fetchDataFromApi() async {
-    // Replace this URL with your actual API endpoint
-    String apiUrl = 'https://api.example.com/data';
+    late Future<Reading> futureReading;
 
-    try {
-      var response = await http.get(Uri.parse(apiUrl));
-
-      if (response.statusCode == 200) {
-        // Parse the JSON response
-        Map<String, dynamic> jsonData = jsonDecode(response.body);
-
-        setState(() {
-          waterHardnessData.add(jsonData['water_hardness']);
-          pHData.add(jsonData['ph']);
-          temperatureData.add(jsonData['temperature']);
-        });
-      } else {
-        throw Exception('Failed to load data from API');
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchDataFromApi();
+    futureReading = fetchReading();
   }
 
   @override
@@ -57,6 +79,7 @@ class _FirstScreenState extends State<FirstScreen> {
         automaticallyImplyLeading: true,
         title: null, // Removed the title from the app bar
       ),
+
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
