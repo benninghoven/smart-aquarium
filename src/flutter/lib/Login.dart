@@ -289,9 +289,15 @@ class _PagesViewState extends State<PagesView>
 class SecondScreen extends StatelessWidget {
   const SecondScreen({Key? key}) : super(key: key);
 
+
   Future fetchData() async {
-    var apiUrl = 'http://localhost:5000/get_latest_readings'; // Replace with your API endpoint
-    var response = await http.get(Uri.parse(apiUrl));
+    var apiUrl = 'http://localhost:5000/get_latest_reading'; // Replace with your API endpoint
+    Map<String, String> header = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale"
+    };
+    var response = await http.get(Uri.parse(apiUrl), headers:header);
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON

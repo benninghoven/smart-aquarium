@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'PPM_Graphs.dart';
 import 'PH.dart';
 import 'Temperature.dart';
+
 
 class Reading {
   final String timestp;
@@ -19,30 +21,19 @@ class Reading {
   });
 
   factory Reading.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'timestp': String timestp,
-        'water_temp': double water_temp,
-        'PPM': int PPM,
-        'pH': double pH,
-      } =>
-        Reading(
-            timestp: timestp,
-            water_temp: water_temp,
-            PPM: PPM,
-            pH: pH,
-        ),
-      _ => throw const FormatException('Failed to load reading.'),
-    };
+    return Reading(
+      timestp: json['timestp'],
+      water_temp: json['water_temp'].toDouble(),
+      PPM: json['PPM'],
+      pH: json['pH'].toDouble(),
+    );
   }
 }
 
 Future<Reading> fetchReading() async {
-  final response = await http
-      .get(Uri.parse('http://localhost:5000/get_latest_reading'));
-
+  final response = await http.get(Uri.parse('http://localhost:5000/get_latest_reading'));
   if (response.statusCode == 200) {
-    return Reading.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Reading.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load reading');
   }
@@ -56,13 +47,7 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
-  List<Color> gradientColors = [Colors.blue, Colors.green];
-  List<double> waterHardnessData = [];
-  List<double> pHData = [];
-  List<double> temperatureData = [];
-
-    late Future<Reading> futureReading;
-
+  late Future<Reading> futureReading;
 
   @override
   void initState() {
@@ -77,9 +62,8 @@ class _FirstScreenState extends State<FirstScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: null, // Removed the title from the app bar
+        title: null,
       ),
-
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -113,52 +97,55 @@ class _FirstScreenState extends State<FirstScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CircleButton(
-                          label: 'Water Hardness',
-                          number: waterHardnessData.isNotEmpty
-                              ? waterHardnessData.last.toString()
-                              : '-',
-                          icon: Icons.opacity, // Example icon
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SecondScreen()),
-                            );
-                          },
-                        ),
-                        CircleButton(
-                          label: 'PH',
-                          number: pHData.isNotEmpty
-                              ? pHData.last.toString()
-                              : '-',
-                          icon: Icons.category, // Example icon
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ThirdScreen()),
-                            );
-                          },
-                        ),
-                        CircleButton(
-                          label: 'Temperature',
-                          number: temperatureData.isNotEmpty
-                              ? temperatureData.last.toString()
-                              : '-',
-                          icon: Icons.thermostat, // Example icon
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FourthScreen()),
-                            );
-                          },
-                        ),
-                      ],
+                    FutureBuilder<Reading>(
+                      future: futureReading,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          final reading = snapshot.data!;
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CircleButton(
+                                label: 'Water Hardness',
+                                number: reading.PPM.toString(),
+                                icon: Icons.opacity,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => SecondScreen()),
+                                  );
+                                },
+                              ),
+                              CircleButton(
+                                label: 'PH',
+                                number: reading.pH.toString(),
+                                icon: Icons.category,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => ThirdScreen()),
+                                  );
+                                },
+                              ),
+                              CircleButton(
+                                label: 'Temperature',
+                                number: reading.water_temp.toString(),
+                                icon: Icons.thermostat,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => FourthScreen()),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -195,7 +182,7 @@ class _CircleButtonState extends State<CircleButton> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final circleSize = screenWidth * 0.25; // Adjust size as needed
+    final circleSize = screenWidth * 0.25;
 
     return MouseRegion(
       onEnter: (_) {
@@ -228,7 +215,7 @@ class _CircleButtonState extends State<CircleButton> {
         child: Column(
           children: [
             AnimatedContainer(
-              duration: Duration(milliseconds: 200),
+              duration: Duration(milliseconds: 140),
               width: circleSize,
               height: circleSize,
               decoration: BoxDecoration(
