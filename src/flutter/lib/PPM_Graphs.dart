@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-// Define a model class for your data points
 class WaterData {
   final int timestamp;
   final double waterHardness;
@@ -9,35 +10,148 @@ class WaterData {
   WaterData(this.timestamp, this.waterHardness);
 }
 
-class SecondScreen extends StatelessWidget {
-  final List<Color> gradientColors = [Colors.blue, Colors.green];
+class SecondScreen extends StatefulWidget {
+  @override
+  _SecondScreenState createState() => _SecondScreenState();
+}
 
-  // Pass a list of WaterData objects to getChartData
-  List<FlSpot> getChartData(List<WaterData> dataPoints) {
-    // Convert WaterData objects to FlSpot objects
-    List<FlSpot> chartData = dataPoints
-        .map((data) => FlSpot(data.timestamp.toDouble(), data.waterHardness))
-        .toList();
-    return chartData;
+class _SecondScreenState extends State<SecondScreen> {
+  final List<Color> gradientColors = [Colors.blue, Colors.green];
+  List<WaterData> dataPoints = [];
+
+  // Fetch data from the API
+ Future<void> fetchData() async {
+  try {
+    final response = await http.get(Uri.parse('http://localhost:5000/get_all_readings'));
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      List<WaterData> fetchedData = jsonResponse.map((data) {
+        // Parse the date string manually
+        DateTime dateTime = _parseDateString(data['timestp']);
+        return WaterData(
+          dateTime.millisecondsSinceEpoch,
+          data['PPM'].toDouble(),
+        );
+      }).toList();
+      setState(() {
+        dataPoints = fetchedData;
+      });
+    } else {
+      throw Exception('Failed to load data: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching data: $e');
+  }
+}
+
+DateTime _parseDateString(String dateString) {
+  // Sample date format: "Tue, 26 Mar 2024 20:33:03 GMT"
+  List<String> parts = dateString.split(' ');
+  int day = int.parse(parts[1]);
+  int month = _getMonthNumber(parts[2]);
+  int year = int.parse(parts[3]);
+  List<String> timeParts = parts[4].split(':');
+  int hour = int.parse(timeParts[0]);
+  int minute = int.parse(timeParts[1]);
+  int second = int.parse(timeParts[2]);
+
+  return DateTime(year, month, day, hour, minute, second);
+}
+
+int _getMonthNumber(String month) {
+  switch (month) {
+    case 'Jan':
+      return DateTime.january;
+    case 'Feb':
+      return DateTime.february;
+    case 'Mar':
+      return DateTime.march;
+    case 'Apr':
+      return DateTime.april;
+    case 'May':
+      return DateTime.may;
+    case 'Jun':
+      return DateTime.june;
+    case 'Jul':
+      return DateTime.july;
+    case 'Aug':
+      return DateTime.august;
+    case 'Sep':
+      return DateTime.september;
+    case 'Oct':
+      return DateTime.october;
+    case 'Nov':
+      return DateTime.november;
+    case 'Dec':
+      return DateTime.december;
+    default:
+      throw FormatException('Invalid month: $month');
+  }
+}
+
+
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  LineChartData _buildChartData() {
+    List<FlSpot> spots = [];
+    dataPoints.forEach((data) {
+      spots.add(FlSpot(data.timestamp.toDouble(), data.waterHardness));
+    });
+
+    print('Data Points: $dataPoints');
+    print('FlSpots: $spots');
+
+    return LineChartData(
+      gridData: FlGridData(show: false),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: SideTitles(
+          showTitles: true,
+          getTitles: (value) {
+  DateTime date = DateTime.fromMillisecondsSinceEpoch((value * 1000).toInt());
+  return '${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+        },
+
+        ),
+        leftTitles: SideTitles(
+          showTitles: true,
+          getTitles: (value) {
+            if (value % 5 == 0) {
+              return value.toInt().toString();
+            } else {
+              return '';
+            }
+          },
+        ),
+      ),
+      borderData: FlBorderData(show: true),
+      minX: dataPoints.isNotEmpty ? dataPoints.first.timestamp.toDouble() : 0,
+      maxX: dataPoints.isNotEmpty ? dataPoints.last.timestamp.toDouble() : 1,
+      minY: 0,
+      maxY: dataPoints.isNotEmpty ? dataPoints.map((e) => e.waterHardness).reduce((a, b) => a > b ? a : b) + 10 : 10,
+      lineBarsData: [
+        LineChartBarData(
+          spots: spots,
+          isCurved: true,
+          colors: gradientColors,
+          barWidth: 5,
+          isStrokeCapRound: true,
+          belowBarData: BarAreaData(show: true),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Example data points
-    List<WaterData> dataPoints = [
-      WaterData(1, 10.0),
-      WaterData(2, 15.0),
-      WaterData(3, 10.0),
-      WaterData(4, 20.0),
-      WaterData(5, 30.0),
-      WaterData(6, 30.0),
-      WaterData(7, 30.0),
-    ];
-
-    
-
-    List<FlSpot> data = getChartData(dataPoints);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Water Hardness Chart'),
@@ -46,69 +160,11 @@ class SecondScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // Adjust the width here
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: SideTitles(
-                    showTitles: true,
-                    getTitles: (value) {
-                      // Customize the bottom axis labels based on timestamp
-                      switch (value.toInt()) {
-                        case 1:
-                          return 'Day 1';
-                        case 2:
-                          return 'Day 2';
-                        case 3:
-                          return 'Day 3';
-                        case 4:
-                          return 'Day 4';
-                        case 5:
-                          return 'Day 5';
-                        case 6:
-                          return 'Day 6';
-                        case 7:
-                          return 'Day 7';
-                        default:
-                          return '';
-                      }
-                    },
-                  ),
-                  leftTitles: SideTitles(
-                    showTitles: true,
-                    getTitles: (value) {
-                      // Customize the left axis labels based on water hardness values
-                      if (value % 10 == 0) {
-                        return value.toInt().toString();
-                      } else {
-                        return '';
-                      }
-                    },
-                  ),
-                ),
-                borderData: FlBorderData(show: true),
-                minX: 1,
-                maxX: 7,
-                minY: 0,
-                maxY: 40, // Adjust maxY as needed based on your data
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: data,
-                    isCurved: true,
-                    colors: gradientColors,
-                    barWidth: 5,
-                    isStrokeCapRound: true,
-                    belowBarData: BarAreaData(show: true),
-                  ),
-                ],
-              ),
-            ),
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: LineChart(_buildChartData()),
           ),
         ),
       ),
     );
   }
 }
-
