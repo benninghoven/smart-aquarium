@@ -20,7 +20,7 @@ def get_latest_readings():
 def get_all_readings():
     conn = connect_to_mysql()
     if conn:
-        everything_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS LIMIT 3;"""
+        everything_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS LIMIT 500;"""
         everything_result = query_to_json(conn, everything_query)
         conn.close()
         return jsonify(everything_result)
