@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class SignUpView extends StatefulWidget {
   const SignUpView({Key? key}) : super(key: key);
@@ -18,6 +21,69 @@ class _SignUpViewState extends State<SignUpView> {
       password.isEmpty ||
       confirmPassword.isEmpty ||
       password != confirmPassword;
+
+Future<void> signUpUser() async {
+  String username = email.trim();
+  String userPassword = password.trim();
+
+  // Prepare the request body with signup flag
+  Map<String, String> requestBody = {
+    'username': username,
+    'password': userPassword,
+    'signup': 'true',  // Include signup flag
+  };
+
+  try {
+    // Send a POST request to the signup endpoint
+    var response = await http.post(
+      Uri.parse('http://localhost:5000/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(requestBody),
+    );
+
+    // Handle response based on status code
+    if (response.statusCode == 201) {
+      // Signup successful
+      Fluttertoast.showToast(
+        msg: 'Sign up successful!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+
+      // Navigate back to the previous screen or perform other actions
+      Navigator.pop(context);
+    } else {
+      // Signup failed
+      Fluttertoast.showToast(
+        msg: 'Failed to sign up. Please try again.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  } catch (e) {
+    // Handle any exceptions or errors
+    print('Error during sign-up: $e');
+    Fluttertoast.showToast(
+      msg: 'An error occurred. Please try again later.',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,25 +157,10 @@ class _SignUpViewState extends State<SignUpView> {
                 ),
                 const SizedBox(height: 5.0),
                 ElevatedButton(
-                  onPressed: isSignUpButtonDisabled
-                      ? null
-                      : () {
-                          print("do sign-up action");
-
-                          Fluttertoast.showToast(
-                            msg: 'Sign up successful!',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.green,
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
-
-                          Navigator.pop(context);
-                        },
+                  onPressed: isSignUpButtonDisabled ? null : signUpUser,
                   child: const Text('Sign Up'),
-                ),
+                    ),      
+
               ],
             ),
           ),

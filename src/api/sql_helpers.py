@@ -35,3 +35,4 @@ def query_to_json(conn, query):
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return None
+

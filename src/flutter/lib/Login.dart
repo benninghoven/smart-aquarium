@@ -75,6 +75,74 @@ class _LoginViewState extends State<Login> {
   bool get isSignInButtonDisabled =>
       _nameController.text.isEmpty || _passwordController.text.isEmpty;
 
+  Future<void> loginUser() async {
+    String username = _nameController.text.trim();
+    String password = _passwordController.text.trim();
+    if (username.isEmpty) {
+        Fluttertoast.showToast(
+          msg: 'Please enter your username',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        return; // Exit the method if username is empty
+      }
+    // Prepare the request body
+    Map<String, String> requestBody = {
+      'username': username,
+      'password': password,
+      'signup': 'true',  // Include signup flag
+    };
+
+    try {
+      // Send a POST request to the login endpoint
+      var response = await http.post(
+        Uri.parse('http://localhost:5000/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        // Login successful
+        Fluttertoast.showToast(
+          msg: 'Sign in successful!',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        // Navigate to the home screen or desired screen upon successful login
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const PagesView(selectedTab: Tab.house),
+        ));
+
+        // Clear the text fields after successful login
+        _nameController.clear();
+        _passwordController.clear();
+      } else {
+        // Login failed
+        Fluttertoast.showToast(
+          msg: 'Invalid username or password',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } catch (e) {
+      // Handle any exceptions or errors
+      print('Error during login: $e');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,32 +223,10 @@ class _LoginViewState extends State<Login> {
                 ),
                 const SizedBox(height: 15.0),
                 ElevatedButton(
-                  onPressed: isSignInButtonDisabled
-                      ? null
-                      : () {
-                          Fluttertoast.showToast(
-                            msg: 'Sign in successful!',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.green,
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
+                    onPressed: isSignInButtonDisabled ? null : loginUser,
+                    child: const Text('Sign In'),
+                  ),
 
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(
-                            builder: (context) =>
-                                const PagesView(selectedTab: Tab.house),
-                          ))
-                              .then((_) {
-                            _nameController.clear();
-                            _passwordController.clear();
-                            setState(() {});
-                          });
-                        },
-                  child: const Text('Sign In'),
-                ),
                 const SizedBox(height: 0.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
