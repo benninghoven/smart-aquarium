@@ -234,7 +234,7 @@ class _FourthScreenState extends State<FourthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Water Temperature Chart'),
+        title: Text('Water Temperature °F Chart'),
       ),
       body: Stack(
         children: [
