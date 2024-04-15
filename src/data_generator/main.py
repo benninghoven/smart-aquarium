@@ -43,7 +43,9 @@ def main():
             # avoid overflowing the buffer. May lower number if have weird errors
             if _ % 1000 == 0:
                 print(f"{_/MINUTES * 100:.1F}% done")
+                conn.commit()
 
+        conn.commit()
         conn.close()
         print("100%  done")
         return
