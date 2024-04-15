@@ -76,6 +76,8 @@ def main():
                 execute_query(conn, query)
             print("COMPLETE: POPULATED FISH_TOLERANCES")
 
+
+        conn.commit()
         conn.close()
         return
 
