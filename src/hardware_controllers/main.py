@@ -1,61 +1,59 @@
-####################
-# Devin Benninghoven
-# 02/02/24
-####################
-
-import os
-
-from temperature_sensor.temperature_sensor import TemperatureSensor
-from adc.adc import Adc
 from time import sleep
-from statistics import mode
+from gpiozero import LED
+
+from sensors import TemperatureSensor, PPMSensor, PHSensor
+
+import threading
 
 
-current_script_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.abspath(os.path.join(current_script_dir, os.pardir))
-os.chdir(parent_dir)
+def main():
+
+    temperatureSensor = TemperatureSensor()
+    ppmSensor = PPMSensor()
+    phSensor = PHSensor()
+    debugLight = LED(17)
+
+    try:
+        while True:
+            print("Reading temperature...")
+
+            for i in range(3):
+                t1 = threading.Thread(target=debugLight.blink, args=(0.5, 0.5))
+                t1.start()
+
+                if i == 0:
+                    try:
+                        measured_temperature = temperatureSensor.Read()
+                        print(f"{temperatureSensor.name}: {measured_temperature}{temperatureSensor.unit}")
+                    finally:
+                        debugLight.off()
+                elif i == 1:
+                    try:
+                        measured_ppm = ppmSensor.Read()
+                        sleep(3)
+                        print(f"{ppmSensor.name}: {measured_ppm}{ppmSensor.unit}")
+                    finally:
+                        debugLight.off()
+
+                elif i == 2:
+                    try:
+                        measured_ph = phSensor.Read()
+                        sleep(3)
+                        print(f"{phSensor.name}: {measured_ph}{phSensor.unit}")
+                    finally:
+                        debugLight.off()
+
+            with open("time_between_readings.txt", "r") as file:
+                TIME_BETWEEN_READINGS = int(file.read())
+
+            print(f"Sleeping for {TIME_BETWEEN_READINGS} seconds...")
+            sleep(TIME_BETWEEN_READINGS)
+
+    except KeyboardInterrupt:
+        print("\nExiting...")
+    finally:
+        exit(0)
 
 
-LOOPS = 10
-SLEEPTIME = .2
-
-
-def convert_to_tds(voltage, temperature):
-
-    compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0)
-    compensationVolatge = voltage / compensationCoefficient
-    tdsValue = (133.42 * compensationVolatge * compensationVolatge * compensationVolatge - 255.86 * compensationVolatge * compensationVolatge + 857.39 * compensationVolatge) * 0.5
-
-    return tdsValue
-
-
-temperatureSensor = TemperatureSensor()
-temperatureValues = []
-
-print("""MEASURING TEMPERATURE""")
-
-for i in range(0, LOOPS):
-    temperatureValue = temperatureSensor.poll()
-    print(f"{temperatureValue:.2f}F")
-    temperatureValues.append(temperatureValue)
-    sleep(SLEEPTIME)
-
-modeTemperature = mode(temperatureValues)
-print(f"Mode Temperature: {modeTemperature:.2f}F")
-
-tds_values = []
-adc = Adc()
-for i in range(0, LOOPS):
-    adc_value, voltage = adc.poll_sensor(1)
-    tds = int(convert_to_tds(voltage, modeTemperature))
-    tds_values.append(tds)
-    print(f"{tds}ppm")
-    sleep(SLEEPTIME)
-
-mode_tds = mode(tds_values)
-print(f"Mode TDS: {mode_tds}ppm")
-
-for i in range(0, LOOPS):
-    adc_value, voltage = adc.poll_sensor(0)
-    print(f"{adc_value} - {voltage}V")
-    sleep(SLEEPTIME)
+if __name__ == "__main__":
+    main()
