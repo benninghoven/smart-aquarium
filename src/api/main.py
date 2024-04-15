@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 app.config['CORS_HEADERS'] = 'content-type'
 
+
 @app.route("/get_latest_reading", methods=["GET"])
 def get_latest_readings():
     conn = connect_to_mysql()
@@ -24,6 +25,32 @@ def get_all_readings():
         everything_result = query_to_json(conn, everything_query)
         conn.close()
         return jsonify(everything_result)
+    return jsonify({"error": "Could not connect to MySQL"})
+
+
+@app.route("/get_today_readings", methods=["GET"])
+def get_today_readings():
+    conn = connect_to_mysql()
+    if conn:
+        today_query = """
+        SELECT * FROM SENSOR_READINGS WHERE TIMESTAMPDIFF(DAY, SENSOR_READINGS.TIMESTP, NOW()) < 1;
+        """
+        today_result = query_to_json(conn, today_query)
+        conn.close()
+        return jsonify(today_result)
+    return jsonify({"error": "Could not connect to MySQL"})
+
+
+@app.route("/get_month_readings", methods=["GET"])
+def get_month_readings():
+    conn = connect_to_mysql()
+    if conn:
+        month_query = """
+        SELECT * FROM SENSOR_READINGS WHERE TIMESTAMPDIFF(MONTH, SENSOR_READINGS.TIMESTP, NOW()) < 1;
+        """
+        month_result = query_to_json(conn, month_query)
+        conn.close()
+        return jsonify(month_result)
     return jsonify({"error": "Could not connect to MySQL"})
 
 

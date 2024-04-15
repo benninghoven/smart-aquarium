@@ -1,8 +1,6 @@
 from time import sleep
 from gpiozero import LED
-
 from sensors import TemperatureSensor, PPMSensor, PHSensor
-
 import threading
 
 
@@ -27,6 +25,7 @@ def main():
                         print(f"{temperatureSensor.name}: {measured_temperature}{temperatureSensor.unit}")
                     finally:
                         debugLight.off()
+
                 elif i == 1:
                     try:
                         measured_ppm = ppmSensor.Read()

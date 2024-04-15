@@ -13,6 +13,15 @@ services:
     networks:
       - docker_network
 
+  adminer:
+    image: adminer
+    ports:
+      - "8085:8080"
+    networks:
+      - docker_network
+    depends_on:
+      - database
+
   data_generator:
     image: python:alpine3.19
     volumes:
