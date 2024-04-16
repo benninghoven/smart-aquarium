@@ -1,9 +1,8 @@
-from sensor_generator import SensorGenerator
-from datetime import datetime, timedelta
 import time
-from sql_helpers import connect_to_mysql, execute_query
-
+from datetime import datetime, timedelta
+from sensor_generator import SensorGenerator
 from fish_tolerances import FISH_TOLERANCES
+from utils.sql_helpers import connect_to_mysql, execute_query
 
 
 def main():

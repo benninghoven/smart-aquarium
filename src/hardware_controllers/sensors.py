@@ -5,6 +5,7 @@
 from w1thermsensor import W1ThermSensor, Unit
 from statistics import mode
 from random import randint, randrange
+from time import sleep
 
 
 class Sensor:
@@ -50,6 +51,15 @@ class PPMSensor(Sensor):
     def Poll(self):
         return randint(100, 250)
 
+    def Read(self):
+        readings = []
+        for _ in range(self.times_to_poll):
+            reading = self.Poll()
+            if reading is not None:
+                readings.append(reading)
+        sleep(3)
+        return mode(readings)
+
 
 class PHSensor(Sensor):
     def __init__(self):
@@ -57,3 +67,12 @@ class PHSensor(Sensor):
 
     def Poll(self):
         return randrange(65, 80) / 10
+
+    def Read(self):
+        readings = []
+        for _ in range(self.times_to_poll):
+            reading = self.Poll()
+            if reading is not None:
+                readings.append(reading)
+        sleep(3)
+        return mode(readings)

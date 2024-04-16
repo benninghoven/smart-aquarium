@@ -1,9 +1,10 @@
 from flask import Flask, jsonify
-from sql_helpers import connect_to_mysql, execute_query, query_to_json
+from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
 
 app = Flask(__name__)
 
 app.config['CORS_HEADERS'] = 'content-type'
+
 
 @app.route("/get_latest_reading", methods=["GET"])
 def get_latest_readings():

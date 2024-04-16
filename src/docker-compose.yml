@@ -13,11 +13,19 @@ services:
     networks:
       - docker_network
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - docker_network
+
   data_generator:
     image: python:alpine3.19
     volumes:
       - ./data_generator/:/app
-      - ./api/sql_helpers.py:/app/sql_helpers.py
+      - ./utils:/app/utils
     working_dir: /app
     command: >
       sh -c "pip install -r requirements.txt && python main.py"
@@ -30,6 +38,7 @@ services:
     image: python:alpine3.19
     volumes:
       - ./api/:/app
+      - ./utils:/app/utils
     working_dir: /app
     command: >
       sh -c "pip install -r requirements.txt && python main.py"

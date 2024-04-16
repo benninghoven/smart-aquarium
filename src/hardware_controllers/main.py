@@ -1,9 +1,8 @@
 from time import sleep
 from gpiozero import LED
-
-from sensors import TemperatureSensor, PPMSensor, PHSensor
-
 import threading
+from sensors import TemperatureSensor, PPMSensor, PHSensor
+from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
 
 
 def main():
@@ -30,7 +29,6 @@ def main():
                 elif i == 1:
                     try:
                         measured_ppm = ppmSensor.Read()
-                        sleep(3)
                         print(f"{ppmSensor.name}: {measured_ppm}{ppmSensor.unit}")
                     finally:
                         debugLight.off()
@@ -38,7 +36,6 @@ def main():
                 elif i == 2:
                     try:
                         measured_ph = phSensor.Read()
-                        sleep(3)
                         print(f"{phSensor.name}: {measured_ph}{phSensor.unit}")
                     finally:
                         debugLight.off()
