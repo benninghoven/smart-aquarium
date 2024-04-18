@@ -3,6 +3,7 @@ from gpiozero import LED
 import threading
 from sensors import TemperatureSensor, PPMSensor, PHSensor
 from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
+from datetime import datetime
 
 
 def main():
@@ -11,6 +12,15 @@ def main():
     ppmSensor = PPMSensor()
     phSensor = PHSensor()
     debugLight = LED(17)
+
+    m_temp = 999999
+    m_ppm = 999999
+    m_ph = 999999
+
+    const_tankid = 0
+    # get tank_id, stored in tank_id.txt
+    with open("tank_id.txt", 'r') as tid:
+        const_tankid = int(tid.readline())
 
     try:
         while True:
@@ -42,6 +52,20 @@ def main():
 
             with open("time_between_readings.txt", "r") as file:
                 TIME_BETWEEN_READINGS = int(file.read())
+
+            print("Inputting values into DB")
+            try:
+                conn = connect_to_mysql()
+                cursor = conn.cursor()
+                cursor.execute(f"""
+                    INSERT INTO SENSOR_READINGS (tank_id, timestp, water_temp, PPM, pH)
+                    VALUES ({const_tankid}, '{datetime.now()}', {m_temp}, {m_ppm}, {m_ph});""")
+                cursor.close()
+                conn.commit()
+                conn.close()
+                print("Values inserted")
+            except Exception as e:
+                print("Error with inserting data into MySQL: ", e)
 
             print(f"Sleeping for {TIME_BETWEEN_READINGS} seconds...")
             sleep(TIME_BETWEEN_READINGS)

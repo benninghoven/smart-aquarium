@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from sql import get_db_and_cursor
-import validate_account
+import api.validate_account as validate_account
 
 app = Flask(__name__)
 '''mysql = MySQL()

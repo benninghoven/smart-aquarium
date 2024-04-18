@@ -34,8 +34,8 @@ def main():
                 rand_data = generator.generate_values()
                 simulated_dt += timedelta(minutes=1)
                 insert_query = f"""
-                    INSERT INTO SENSOR_READINGS (username, timestp, water_temp, PPM, pH)
-                    VALUES ('TESTUSER', '{simulated_dt.strftime('%Y/%m/%d %H:%M:%S')}',
+                    INSERT INTO SENSOR_READINGS (tank_id, timestp, water_temp, PPM, pH)
+                    VALUES ({1111111111}, '{simulated_dt.strftime('%Y/%m/%d %H:%M:%S')}',
                     {rand_data['temperature']},
                     {rand_data['ppm']},
                     {rand_data['ph']});

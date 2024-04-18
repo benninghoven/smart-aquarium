@@ -9,18 +9,18 @@ username		VARCHAR(20) NOT NULL,
 hashed_pw		CHAR(60),
 salt_val		CHAR(29),
 tank_id			INT NOT NULL,
-PRIMARY KEY(username, tank_id)
+PRIMARY KEY(tank_id, username)
 );
 
 
 CREATE TABLE IF NOT EXISTS SENSOR_READINGS(
-username		VARCHAR(20) NOT NULL,
+tank_id			INT NOT NULL,
 timestp 		DATETIME NOT NULL DEFAULT NOW(),
 water_temp		FLOAT,
 PPM				SMALLINT,
 pH				FLOAT,
-PRIMARY KEY (username, timestp),
-FOREIGN KEY (username) REFERENCES accounts(username)
+PRIMARY KEY (tank_id, timestp),
+FOREIGN KEY (tank_id) REFERENCES accounts(tank_id)
 );
 
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS FISH_IN_USER_TANK(
 username		VARCHAR(20) NOT NULL,
 tank_id			INT NOT NULL,
 fish			VARCHAR(50),
-FOREIGN KEY (username, tank_id) REFERENCES accounts(username, tank_id)
+FOREIGN KEY (tank_id) REFERENCES accounts(tank_id)
 );
 
 
