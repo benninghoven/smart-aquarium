@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 
 class SensorGenerator:
@@ -7,6 +8,12 @@ class SensorGenerator:
         self.ppm_range = (0, 200)
         self.temperature_range = (65, 90)
         self.previous_values = {'ph': 7.0, 'ppm': 100, 'temperature': 72}
+
+        self.timestp = None
+        self.tank_id = 1111111111
+
+    def change_tank_id(self, tank_id):
+        self.tank_id = tank_id
 
     def generate_values(self):
 
@@ -22,10 +29,23 @@ class SensorGenerator:
         self.previous_values['ppm'] = max(self.ppm_range[0], min(self.ppm_range[1], self.previous_values['ppm']))
         self.previous_values['temperature'] = max(self.temperature_range[0], min(self.temperature_range[1], self.previous_values['temperature']))
 
+        self.timestp = datetime.now()
         return {
             'ph': round(self.previous_values['ph'], 2),
             'ppm': round(self.previous_values['ppm']),
-            'temperature': round(self.previous_values['temperature'], 2)
+            'temperature': round(self.previous_values['temperature'], 2),
+            'timestp': self.timestp,
+            'tank_id': self.tank_id,
+        }
+
+    def generate_unhealthy_values(self):
+
+        return {
+            'ph': 11.3,
+            'ppm': 1020,
+            'temperature': 120,
+            'timestp': self.timestp,
+            'tank_id': self.tank_id,
         }
 
 
