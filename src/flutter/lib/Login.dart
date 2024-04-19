@@ -301,106 +301,105 @@ class _SecondScreenState extends State<SecondScreen> {
   Map<String, dynamic> fishData = {};
   late List<dynamic> jsonData; // Define jsonData as a class-level variable
 
-  Future<void> fetchOurData() async {
+Future<void> fetchOurData() async {
   try {
-    // Fetch fish tolerances data
-    var apiUrlFishTolerances = 'http://localhost:5000/get_fish_tolerances';
-    var responseFishTolerances = await http.get(Uri.parse(apiUrlFishTolerances));
+    String apiUrlFishTolerances = kIsWeb
+        ? 'http://localhost:5000/get_fish_tolerances'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:5000/get_fish_tolerances'
+            : 'http://localhost:5000/get_fish_tolerances';
 
+    final responseFishTolerances = await http.get(Uri.parse(apiUrlFishTolerances));
     if (responseFishTolerances.statusCode == 200) {
-      var jsonDataFishTolerances = json.decode(responseFishTolerances.body) as List<dynamic>;
+      List<dynamic> jsonDataFishTolerances = json.decode(responseFishTolerances.body);
 
-      // Fetch latest reading data
-      var apiUrlLatestReading = 'http://localhost:5000/get_latest_reading';
-      var responseLatestReading = await http.get(Uri.parse(apiUrlLatestReading));
+      String apiUrlLatestReading = kIsWeb
+          ? 'http://localhost:5000/get_latest_reading'
+          : Platform.isAndroid
+              ? 'http://10.0.2.2:5000/get_latest_reading'
+              : 'http://localhost:5000/get_latest_reading';
 
+      final responseLatestReading = await http.get(Uri.parse(apiUrlLatestReading));
       if (responseLatestReading.statusCode == 200) {
-        var jsonDataLatestReading = json.decode(responseLatestReading.body) as Map<String, dynamic>;
+        Map<String, dynamic> jsonDataLatestReading = json.decode(responseLatestReading.body);
 
         // Extract latest readings
-        var latestPPM = jsonDataLatestReading['PPM'] as int?;
-        var latestPH = jsonDataLatestReading['pH'] as double?;
-        var latestTemp = jsonDataLatestReading['water_temp'] as double?;
+        int? latestPPM = jsonDataLatestReading['PPM'] as int?;
+        double? latestPH = jsonDataLatestReading['pH'] as double?;
+        double? latestTemp = jsonDataLatestReading['water_temp'] as double?;
 
         // Find selected fish data
-        var selectedFishData = jsonDataFishTolerances.firstWhere(
+        Map<String, dynamic> selectedFishData = jsonDataFishTolerances.firstWhere(
           (fish) => fish['fish_name'] == selectedFish,
           orElse: () => {},
         );
 
         if (selectedFishData.isNotEmpty) {
           // Compare latest reading with fish's tolerance range
-          var minPPM = selectedFishData['min_ppm'] as int;
-          var maxPPM = selectedFishData['max_ppm'] as int;
-          var minPH = selectedFishData['min_ph'] as double;
-          var maxPH = selectedFishData['max_ph'] as double;
-          var minTemp = selectedFishData['min_temp'] as double;
-          var maxTemp = selectedFishData['max_temp'] as double;
+          int minPPM = selectedFishData['min_ppm'] as int;
+          int maxPPM = selectedFishData['max_ppm'] as int;
+          double minPH = selectedFishData['min_ph'] as double;
+          double maxPH = selectedFishData['max_ph'] as double;
+          double minTemp = selectedFishData['min_temp'] as double;
+          double maxTemp = selectedFishData['max_temp'] as double;
 
           print('Latest PPM: $latestPPM, Latest pH: $latestPH, Latest Temp: $latestTemp');
           print('Min PPM: $minPPM, Max PPM: $maxPPM, Min pH: $minPH, Max pH: $maxPH, Min Temp: $minTemp, Max Temp: $maxTemp');
 
           if (latestPPM != null && latestPH != null && latestTemp != null) {
-            if (latestPPM != null && latestPH != null && latestTemp != null) {
-                    List<String> warnings = [];
+            List<String> warnings = [];
 
-                    if (latestPPM < minPPM || latestPPM > maxPPM) {
-                      warnings.add('PPM: $latestPPM (Expected: $minPPM - $maxPPM)');
-                    }
-                    if (latestPH < minPH || latestPH > maxPH) {
-                      warnings.add('pH: $latestPH (Expected: $minPH - $maxPH)');
-                    }
-                    if (latestTemp < minTemp || latestTemp > maxTemp) {
-                      warnings.add('Temperature: $latestTemp (Expected: $minTemp - $maxTemp)');
-                    }
+            if (latestPPM < minPPM || latestPPM > maxPPM) {
+              warnings.add('PPM: $latestPPM (Expected: $minPPM - $maxPPM)');
+            }
+            if (latestPH < minPH || latestPH > maxPH) {
+              warnings.add('pH: $latestPH (Expected: $minPH - $maxPH)');
+            }
+            if (latestTemp < minTemp || latestTemp > maxTemp) {
+              warnings.add('Temperature: $latestTemp (Expected: $minTemp - $maxTemp)');
+            }
 
-                    if (warnings.isNotEmpty) {
-                      String warningMessage = 'Fish is out of tolerance range!\n\n';
+            if (warnings.isNotEmpty) {
+              String warningMessage = 'Fish is out of tolerance range!\n\n';
 
-                      warningMessage += 'Your Values That Are Out Of Habitable Range:\n';
-                      warningMessage += warnings.join('\n');
+              warningMessage += 'Your Values That Are Out Of Habitable Range:\n';
+              warningMessage += warnings.join('\n');
 
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Warning'),
-                          content: Text(warningMessage),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    else{
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Hooray!'),
-                      content: const Text('Fish is within tolerance range!'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('OK'),
-                        ),
-                      ],
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Warning'),
+                  content: Text(warningMessage),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
                     ),
-                  );
-                }
-                  }
-
-                
+                  ],
+                ),
+              );
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Hooray!'),
+                  content: const Text('Fish is within tolerance range!'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              );
+            }
           }
         }
       } else {
-        print('Failed to load latest reading data: ${responseLatestReading.statusCode}');
-        throw Exception('Failed to load latest reading data');
+        throw Exception('Failed to load latest reading data: ${responseLatestReading.statusCode}');
       }
     } else {
-      print('Failed to load fish tolerances data: ${responseFishTolerances.statusCode}');
-      throw Exception('Failed to load fish tolerances data');
+      throw Exception('Failed to load fish tolerances data: ${responseFishTolerances.statusCode}');
     }
   } catch (e) {
     print('Error fetching data: $e');
@@ -410,24 +409,28 @@ class _SecondScreenState extends State<SecondScreen> {
 
 
 
-  Future<void> fetchData() async {
+
+    Future<void> fetchData() async {
     try {
-      var apiUrl = 'http://localhost:5000/get_fish_tolerances';
-      var response = await http.get(Uri.parse(apiUrl));
+      String apiUrl = kIsWeb
+          ? 'http://localhost:5000/get_fish_tolerances'
+          : Platform.isAndroid
+              ? 'http://10.0.2.2:5000/get_fish_tolerances'
+              : 'http://localhost:5000/get_fish_tolerances';
 
+      final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
-        jsonData = json.decode(response.body) as List<dynamic>;
-
+        List<dynamic> fetchedData = jsonDecode(response.body);
         setState(() {
-          dropdownItems = jsonData.map<String>((fish) => fish['fish_name'] as String).toList();
+          jsonData = fetchedData;
+          dropdownItems = fetchedData.map<String>((fish) => fish['fish_name'] as String).toList();
           selectedFish = dropdownItems.isNotEmpty ? dropdownItems[0] : '';
-          fishData = jsonData.firstWhere(
+          fishData = fetchedData.firstWhere(
             (fish) => fish['fish_name'] == selectedFish,
             orElse: () => {},
           );
         });
       } else {
-        print('Failed to load data: ${response.statusCode}');
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -435,6 +438,8 @@ class _SecondScreenState extends State<SecondScreen> {
       // Handle error gracefully
     }
   }
+
+
 
   void onDropdownChanged(String? newValue) {
     print('Selected fish: $newValue'); // Add debug print
