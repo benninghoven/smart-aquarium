@@ -86,7 +86,7 @@ def main():
             query = f"""
                 INSERT INTO FISH_TOLERANCES (fish_name, max_temp, min_temp, max_ppm, min_ppm, max_ph, min_ph)
                 VALUES(
-                    "{fish["fish_name"]}",
+                    '{fish["fish_name"]}',
                     {fish["max_temp"]},
                     {fish["min_temp"]},
                     {fish["max_ppm"]},
