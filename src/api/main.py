@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
+import json
 
 app = Flask(__name__)
 
@@ -26,6 +27,12 @@ def get_all_readings():
         conn.close()
         return jsonify(everything_result)
     return jsonify({"error": "Could not connect to MySQL"})
+
+@app.route('/get_fish_tolerances')
+def get_fish_tolerances():
+    with open('fish_tolerances.json', 'r') as f:
+        fish_tolerances = json.load(f)
+    return jsonify(fish_tolerances)
 
 
 if __name__ == "__main__":
