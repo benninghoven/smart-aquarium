@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_application_1/Home.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 void main() {
   runApp(MyApp());
@@ -289,15 +291,28 @@ class _PagesViewState extends State<PagesView>
 class SecondScreen extends StatelessWidget {
   const SecondScreen({Key? key}) : super(key: key);
 
+  String getApiUrl() {
+  if (kIsWeb) {
+    // Handle web platform
+    return 'http://localhost:5000/get_latest_reading';
+  } else if (Platform.isAndroid) {
+    // Handle Android platform
+    return 'http://10.0.2.2:5000/get_latest_reading';
+  } else {
+    // Handle other platforms (iOS, macOS, etc.)
+    return 'http://localhost:5000/get_latest_reading';
+  }
+}
+
 
   Future fetchData() async {
-    var apiUrl = 'http://localhost:5000/get_latest_reading'; // Replace with your API endpoint
+    var apiUrl = getApiUrl(); // Use the function to get the correct API URL
     Map<String, String> header = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale"
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale"
     };
-    var response = await http.get(Uri.parse(apiUrl), headers:header);
+    var response = await http.get(Uri.parse(apiUrl), headers: header);
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON
