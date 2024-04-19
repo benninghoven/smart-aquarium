@@ -475,7 +475,7 @@ class _SecondScreenState extends State<SecondScreen> {
             ),
             ElevatedButton(
               onPressed: fetchOurData, // Call fetchData when the button is pressed
-              child: const Text('Fetch Data'),
+              child: const Text('Is It Compatible?'),
             ),
             const SizedBox(height: 20),
             if (fishData.isNotEmpty)
