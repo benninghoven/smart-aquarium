@@ -3,6 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
 
 class WaterData {
   final int timestamp;
@@ -41,40 +43,55 @@ class _ThirdScreenState extends State<ThirdScreen> {
   }
 
   Future<void> fetchData() async {
-    try {
-      final response = await http.get(Uri.parse('http://localhost:5000/get_all_readings'));
-      final latestResponse = await http.get(Uri.parse('http://localhost:5000/get_latest_reading'));
-      if (latestResponse.statusCode == 200) {
-        Map<String, dynamic> latestJsonResponse = jsonDecode(latestResponse.body);
-        double latestpHValue = latestJsonResponse['pH'].toDouble();
-        print('Latest pH Response: $latestJsonResponse'); // Debug statement
-        setState(() {
-          latestpH = latestpHValue;
-        });
-      } else {
-        throw Exception('Failed to load latest pH data: ${latestResponse.statusCode}');
-      }
-      if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(response.body);
-        List<WaterData> fetchedData = jsonResponse.map((data) {
-          // Parse the date string manually
-          DateTime dateTime = _parseDateString(data['timestp']);
-          return WaterData(
-            dateTime.millisecondsSinceEpoch,
-            data['pH'].toDouble(),
-            data['pH'].toDouble(), // Assuming pH is initially the latest value
-          );
-        }).toList();
-        setState(() {
-          dataPoints = fetchedData;
-        });
-      } else {
-        throw Exception('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
+  try {
+    String apiUrl = kIsWeb
+        ? 'http://localhost:5000/get_all_readings'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:5000/get_all_readings'
+            : 'http://localhost:5000/get_all_readings';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    String latestApiUrl = kIsWeb
+        ? 'http://localhost:5000/get_latest_reading'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:5000/get_latest_reading'
+            : 'http://localhost:5000/get_latest_reading';
+
+    final latestResponse = await http.get(Uri.parse(latestApiUrl));
+
+    if (latestResponse.statusCode == 200) {
+      Map<String, dynamic> latestJsonResponse = jsonDecode(latestResponse.body);
+      double latestpHValue = latestJsonResponse['pH'].toDouble();
+      print('Latest pH Response: $latestJsonResponse'); // Debug statement
+      setState(() {
+        latestpH = latestpHValue;
+      });
+    } else {
+      throw Exception('Failed to load latest pH data: ${latestResponse.statusCode}');
     }
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      List<WaterData> fetchedData = jsonResponse.map((data) {
+        // Parse the date string manually
+        DateTime dateTime = _parseDateString(data['timestp']);
+        return WaterData(
+          dateTime.millisecondsSinceEpoch,
+          data['pH'].toDouble(),
+          data['pH'].toDouble(), // Assuming pH is initially the latest value
+        );
+      }).toList();
+      setState(() {
+        dataPoints = fetchedData;
+      });
+    } else {
+      throw Exception('Failed to load data: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching data: $e');
   }
+}
+
 
   DateTime _parseDateString(String dateString) {
     // Sample date format: "Tue, 26 Mar 2024 20:33:03 GMT"

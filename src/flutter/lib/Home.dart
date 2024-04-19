@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'PPM_Graphs.dart';
 import 'PH.dart';
 import 'Temperature.dart';
-
 
 class Reading {
   final String timestp;
@@ -31,7 +31,13 @@ class Reading {
 }
 
 Future<Reading> fetchReading() async {
-  final response = await http.get(Uri.parse('http://localhost:5000/get_latest_reading'));
+  String apiUrl = kIsWeb
+      ? 'http://localhost:5000/get_latest_reading'
+      : Platform.isAndroid
+          ? 'http://10.0.2.2:5000/get_latest_reading'
+          : 'http://localhost:5000/get_latest_reading';
+  
+  final response = await http.get(Uri.parse(apiUrl));
   if (response.statusCode == 200) {
     return Reading.fromJson(jsonDecode(response.body));
   } else {
