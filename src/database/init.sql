@@ -37,9 +37,16 @@ PRIMARY KEY(fish_name)
 
 
 CREATE TABLE IF NOT EXISTS FISH_IN_USER_TANK(
-username		VARCHAR(20) NOT NULL,
 tank_id			INT NOT NULL,
 fish			VARCHAR(50),
+FOREIGN KEY (tank_id) REFERENCES accounts(tank_id),
+FOREIGN KEY (fish) REFERENCES FISH_TOLERANCES(fish_name)
+);
+
+
+CREATE TABLE IF NOT EXISTS ALERTS(
+tank_id			INT NOT NULL,
+alert			VARCHAR(240),
 FOREIGN KEY (tank_id) REFERENCES accounts(tank_id)
 );
 

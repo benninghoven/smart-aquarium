@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from sensor_generator import SensorGenerator
 from fish_tolerances import FISH_TOLERANCES
 from utils.sql_helpers import connect_to_mysql, execute_query
-
+from utils.fish_reading_checker import fish_checker
 
 def main():
 
@@ -16,48 +16,17 @@ def main():
         time.sleep(5)
 
     if conn:
-
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT COUNT(*) FROM SENSOR_READINGS")
-        count = cursor.fetchone()[0]
-        cursor.close()
-
-        if count > 0:
-            print("Database already has data. Not populating with simulated data")
-        else:
-            print("POPULATING DATABASE WITH SIMULATED DATA")
-            generator = SensorGenerator()
-            MINUTES = 14400
-            simulated_dt = datetime.now() - timedelta(days=10)
-            for _ in range(MINUTES):
-                rand_data = generator.generate_values()
-                simulated_dt += timedelta(minutes=1)
-                insert_query = f"""
-                    INSERT INTO SENSOR_READINGS (tank_id, timestp, water_temp, PPM, pH)
-                    VALUES ({1111111111}, '{simulated_dt.strftime('%Y/%m/%d %H:%M:%S')}',
-                    {rand_data['temperature']},
-                    {rand_data['ppm']},
-                    {rand_data['ph']});
-                    """
-
-                execute_query(conn, insert_query)
-                # do not need to commit every time but need to do often enough to
-                # avoid overflowing the buffer. May lower number if have weird errors
-                if _ % 1000 == 0:
-                    print(f"{_/MINUTES * 100:.1F}% done")
-
-            print("100%  done")
-
+        
         cursor = conn.cursor()
 
         cursor.execute("SELECT COUNT(*) FROM FISH_TOLERANCES")
         count = cursor.fetchone()[0]
         cursor.close()
+        
 
         if count > 0:
-            print("FISH_TOLERANCES Database already has data. Not populating with simulated data")
-            return
+            print("FISH_TOLERANCES Database already has data. Not populating with simulated tolerances data")
+            # return
         else:
             print("POPULATING FISH_TOLERANCES DATABASE")
 
@@ -74,10 +43,68 @@ def main():
                 """
                 execute_query(conn, query)
             print("COMPLETE: POPULATED FISH_TOLERANCES")
+            conn.commit()
+        
+        time.sleep(1)
 
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM FISH_IN_USER_TANK")
+        count = cursor.fetchone()[0]
+        cursor.close()
 
-        conn.commit()
-        conn.close()
+        if count > 0:
+            print("Databse already has data. Not populating with simulated fish in user tank data")
+            # return
+        else:
+            print("POPULATING FISH_IN_USER_TANK DATABASE")
+            query = f"""INSERT INTO FISH_IN_USER_TANK (tank_id, fish) VALUES ({1111111111}, "Angelfish"), ({1111111111}, "Betta")"""
+            execute_query(conn, query)
+            print("COMPLETE: POPULATED FISH IN USER TANK FOR USER: 1111111111")
+            conn.commit()
+        
+        time.sleep(1)
+
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM SENSOR_READINGS")
+        count = cursor.fetchone()[0]
+        cursor.close()
+
+        # using account 1111111111 for simulated data, cannot actually sign into in app
+
+        if count > 0:
+            print("Database already has data. Not populating with simulated readings data")
+            # return
+        else:
+            print("POPULATING DATABASE WITH SIMULATED DATA")
+
+            generator = SensorGenerator()
+            MINUTES = 1400
+            simulated_dt = datetime.now() - timedelta(days=1)
+
+            checker = fish_checker(conn, 1111111111, debug=True)
+
+            for _ in range(MINUTES):
+                rand_data = generator.generate_values()
+                simulated_dt += timedelta(minutes=1)
+                insert_query = f"""
+                    INSERT INTO SENSOR_READINGS (tank_id, timestp, water_temp, PPM, pH)
+                    VALUES ({1111111111}, '{simulated_dt.strftime('%Y/%m/%d %H:%M:%S')}',
+                    {rand_data['temperature']},
+                    {rand_data['ppm']},
+                    {rand_data['ph']});
+                    """
+
+                execute_query(conn, insert_query)
+                checker.check_bounds(rand_data['temperature'], rand_data['ppm'], rand_data['ph'], simulated_dt, add_alert=True, debug=True)
+                # do not need to commit every time but need to do often enough to
+                # Commit every 1000 to avoid overflowing the buffer, also update user on progress.
+                if _ % 1000 == 0:
+                    print(f"{_/MINUTES * 100:.1F}% done")
+                    conn.commit()
+
+            print("100%  done")
+            conn.commit()
+            conn.close()
         return
 
 
