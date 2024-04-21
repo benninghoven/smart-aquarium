@@ -120,15 +120,31 @@ def main():
         print("GENERATING MONTH DATA")
         generate_month_data(conn)
 
-    loop = False
-    print(f"ARGV {sys.argv}")
-    if len(sys.argv) > 1 and sys.argv[1] == "--loop=true":
-        loop = True
+    print("looping")
 
-    print(f"LOOP: {loop}")
+    while True:
 
-    if loop:
-        print("looping")
+        print("reading sensor data")
+        generator = SensorGenerator()
+        data = generator.generate_values()
+
+        insert_query = f"""
+            INSERT INTO SENSOR_READINGS (tank_id, timestp, water_temp, PPM, pH)
+            VALUES (
+            {data['tank_id']},
+            '{data['timestp']}',
+            {data['temperature']},
+            {data['ppm']},
+            {data['ph']}
+            );
+            """
+
+        cursor.execute(insert_query)
+        conn.commit()
+
+        print(f"inserted data: {data}")
+
+        print("sleeping for 60 seconds")
         time.sleep(60)
 
     conn.close()

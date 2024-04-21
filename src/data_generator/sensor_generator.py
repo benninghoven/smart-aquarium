@@ -30,6 +30,7 @@ class SensorGenerator:
         self.previous_values['temperature'] = max(self.temperature_range[0], min(self.temperature_range[1], self.previous_values['temperature']))
 
         self.timestp = datetime.now()
+
         return {
             'ph': round(self.previous_values['ph'], 2),
             'ppm': round(self.previous_values['ppm']),

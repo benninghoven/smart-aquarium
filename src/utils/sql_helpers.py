@@ -10,7 +10,6 @@ def connect_to_mysql():
             database="FISHOLOGY",
             port="3306",
         )
-        #print("Connected to MySQL")
         return conn
     except mysql.connector.Error as err:
         print(f"Error: {err}")
