@@ -3,6 +3,7 @@ from gpiozero import LED
 import threading
 from sensors import TemperatureSensor, PPMSensor, PHSensor
 from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
+from utils.fish_reading_checker import fish_checker
 from datetime import datetime
 
 
@@ -64,6 +65,9 @@ def main():
                 conn.commit()
                 conn.close()
                 print("Values inserted")
+                # bounds checking - DEVIN UNCOMMENT WHEN READY TO USE
+                #checker = fish_checker(conn, 1111111111, debug=True)
+                #checker.check_bounds(m_temp, m_ppm, m_ph, datetime.now(), add_alert=True, debug=True)
             except Exception as e:
                 print("Error with inserting data into MySQL: ", e)
 
