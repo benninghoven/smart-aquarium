@@ -1,6 +1,8 @@
 from pwinput import pwinput as pwin
 import bcrypt, sys
-from sql import get_db_and_cursor
+from sql_helpers import connect_to_mysql
+
+
 
 def login(username, password):
     username = username.strip(" ")
@@ -9,7 +11,8 @@ def login(username, password):
     
     try:
         # log in to an account
-        db, cur = get_db_and_cursor()
+        conn = connect_to_mysql()
+        cur = conn.cursor()
         cur.execute(f"SELECT hashed_pw FROM ACCOUNTS WHERE USERNAME = '{username}';")
         db_hashed_pw = cur.fetchall()[0][0]
         return bcrypt.checkpw(password, db_hashed_pw.encode('utf-8'))

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
-from sql import get_db_and_cursor
-import api.validate_account as validate_account
+from sql_helpers import connect_to_mysql, execute_query, query_to_json
+import validate_account
 
 app = Flask(__name__)
 '''mysql = MySQL()
@@ -19,7 +19,8 @@ def index():
         print(post_content)
         query_result = []
         try:
-            db, cur = get_db_and_cursor()
+            conn = connect_to_mysql()
+            cur = conn.cursor()
             cur.execute("SELECT * FROM SENSOR_READINGS WHERE TIMESTAMPDIFF(DAY, SENSOR_READINGS.TIMESTP, NOW()) < 8 LIMIT 20;") # takes all readings from last day
             query_result = cur.fetchall()
             #print(query_result)
