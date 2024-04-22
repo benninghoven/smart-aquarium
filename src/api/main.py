@@ -28,6 +28,18 @@ def get_all_readings():
         return jsonify(everything_result)
     return jsonify({"error": "Could not connect to MySQL"})
 
+
+@app.route("/get_7_day_readings", methods=["GET"])
+def get_7_day_readings():
+    conn = connect_to_mysql()
+    if conn:
+        seven_day_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS WHERE timestp >= DATE_SUB(NOW(), INTERVAL 7 DAY);"""
+        seven_day_result = query_to_json(conn, seven_day_query)
+        conn.close()
+        return jsonify(seven_day_result)
+    return jsonify({"error": "Could not connect to MySQL"})
+
+
 @app.route('/get_fish_tolerances')
 def get_fish_tolerances():
     with open('fish_tolerances.json', 'r') as f:
