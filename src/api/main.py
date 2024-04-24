@@ -1,12 +1,18 @@
 from flask import Flask, jsonify, request
 from utils.sql_helpers import connect_to_mysql, execute_query, query_to_json
 import json
+import hashlib
 
 app = Flask(__name__)
 
 app.config['CORS_HEADERS'] = 'content-type'
 
-users = {}
+
+def hash_password(password, salt):
+    salted_password = password + salt
+    password_bytes = salted_password.encode('utf-8')
+    hashed_password = hashlib.sha256(password_bytes).hexdigest()
+    return hashed_password[:60]  # Truncate to 60 characters
 
 
 @app.route("/get_latest_reading", methods=["GET"])
@@ -100,10 +106,19 @@ def login():
 
         conn.close()
 
-    if True:
-        return jsonify({"message": "Login successful"}), 200
-    else:
-        return jsonify({"message": "Invalid username or password"}), 401
+    if accounts:
+        account = accounts[0]
+        salt = account['salt_val']
+        hashed_pw = account['hashed_pw']
+        hashed_password = hash_password(password, salt)
+
+        print(f"Stored Hashed Password: {hashed_pw}")
+        print(f"Hashed Password: {hashed_password}")
+
+        if hashed_password == hashed_pw:
+            return jsonify({"message": "Login successful"}), 200
+
+    return jsonify({"message": "Invalid username or password"}), 401
 
 
 @app.route('/get_fish_tolerances')

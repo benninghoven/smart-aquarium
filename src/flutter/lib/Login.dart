@@ -111,18 +111,16 @@ class _LoginViewState extends State<Login> {
             final response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
 
             if (response.statusCode == 200) {
-                // Handle successful login
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const PagesView(selectedTab: Tab.house),
                 ));
             } else {
                 // Handle failed login
-                print('Failed to login: ${response.statusCode}');
+                print('DEVIN: Failed to login: ${response.statusCode}');
             }
         }
         catch (e) {
             print('Error: $e');
-            // Handle error gracefully
         }
     }
 
@@ -206,29 +204,10 @@ class _LoginViewState extends State<Login> {
                 ),
                 const SizedBox(height: 15.0),
                 ElevatedButton(
-                  onPressed: isSignInButtonDisabled
-                      ? null
-                      : () {
-                          Fluttertoast.showToast(
-                            msg: 'Sign in successful!',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.green,
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
-
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(
-                            builder: (context) =>
-                                const PagesView(selectedTab: Tab.house),
-                          ))
-                              .then((_) {
-                            _nameController.clear();
-                            _passwordController.clear();
-                            setState(() {});
-                          });
+                    onPressed: isSignInButtonDisabled
+                        ? null
+                        : () {
+                            loginUser(name, password);
                         },
                   child: const Text('Sign In'),
                 ),
