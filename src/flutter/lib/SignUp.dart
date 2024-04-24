@@ -43,7 +43,8 @@ class _SignUpViewState extends State<SignUpView> {
   final codec = Utf8Codec(allowMalformed: true);
   final passwordBytes = codec.encode(saltedPassword);
   final hash = sha256.convert(passwordBytes);
-  return hash.toString();
+  final hashedPassword = hash.toString();
+  return hashedPassword.substring(0, 60); // Truncate to 60 characters
 }
   String getApiUrl() {
     if (kIsWeb) {

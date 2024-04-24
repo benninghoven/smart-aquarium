@@ -33,6 +33,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final Brightness platformBrightness =
@@ -78,6 +79,52 @@ class _LoginViewState extends State<Login> {
       _nameController.text.isEmpty || _passwordController.text.isEmpty;
 
 
+    String getApiUrl() {
+        if (kIsWeb) {
+          // Handle web platform
+          return 'http://localhost:5000/login';
+        } else if (Platform.isAndroid) {
+          // Handle Android platform
+          return 'http://localhost:5000/login';
+        } else if (Platform.isIOS) {
+          // Handle iOS platform
+          return 'http://localhost:5000/login';
+        } else {
+          // Handle other platforms (if any)
+          return 'http://localhost:5000/login';
+        }
+      return 'http://localhost:5000/login';
+    }
+
+    Future<void> loginUser(String username, String password) async {
+        String apiUrl = getApiUrl();
+        final Map<String, String> headers = {
+            'Content-Type': 'application/json',
+        };
+
+        final Map<String, dynamic> body = {
+            'username': username,
+            'password': password,
+        };
+
+        try {
+            final response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
+
+            if (response.statusCode == 200) {
+                // Handle successful login
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const PagesView(selectedTab: Tab.house),
+                ));
+            } else {
+                // Handle failed login
+                print('Failed to login: ${response.statusCode}');
+            }
+        }
+        catch (e) {
+            print('Error: $e');
+            // Handle error gracefully
+        }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -149,9 +196,9 @@ class _LoginViewState extends State<Login> {
                             : Icons.visibility),
                         color: Colors.red,
                         onPressed: () {
-                          setState(() {
-                            showPassword = !showPassword;
-                          });
+                            setState(() {
+                                showPassword = !showPassword;
+                            });
                         },
                       ),
                     ],
