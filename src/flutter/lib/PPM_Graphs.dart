@@ -214,8 +214,8 @@ Future<void> fetchData() async {
       borderData: FlBorderData(show: true),
       minX: dataPoints.isNotEmpty ? dataPoints.first.timestamp.toDouble() : 0,
       maxX: dataPoints.isNotEmpty ? dataPoints.last.timestamp.toDouble() : dataPoints.isNotEmpty ? dataPoints.first.timestamp.toDouble() : 1,
-      minY: 0,
-      maxY: dataPoints.isNotEmpty ? dataPoints.map((e) => e.waterHardness).reduce((a, b) => a > b ? a : b) + 10 : 10,
+      minY: -10,
+      maxY: dataPoints.isNotEmpty ? dataPoints.map((e) => e.waterHardness).reduce((a, b) => a > b ? a : b)+ 10: 10,
       lineBarsData: [
         LineChartBarData(
           spots: spots,
