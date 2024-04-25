@@ -30,7 +30,7 @@ def get_latest_readings():
 def get_all_readings():
     conn = connect_to_mysql()
     if conn:
-        everything_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS LIMIT 500;"""
+        everything_query = """SELECT * FROM (SELECT TANK_ID, TIMESTP, WATER_TEMP, PPM, PH, ROW_NUMBER() OVER (ORDER BY TIMESTP) AS ROW_NUM FROM SENSOR_READINGS ) AS SUBQUERY WHERE ROW_NUM % 10 = 1 LIMIT 1000;"""
         everything_result = query_to_json(conn, everything_query)
         conn.close()
         return jsonify(everything_result)
