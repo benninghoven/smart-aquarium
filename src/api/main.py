@@ -59,6 +59,14 @@ def register():
 
     conn = connect_to_mysql()
 
+    if 'tankId' in data:
+        try:
+            tank_id = int(data['tankId'])
+        except ValueError:
+            return jsonify({"error": "tankId must be an integer"}), 402
+    else:
+        tank_id = None
+
     if conn:
         account_query = """SELECT * FROM FISHOLOGY.ACCOUNTS;"""
         accounts = query_to_json(conn, account_query)

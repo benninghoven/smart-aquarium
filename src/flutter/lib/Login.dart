@@ -111,10 +111,28 @@ class _LoginViewState extends State<Login> {
             final response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
 
             if (response.statusCode == 200) {
+              Fluttertoast.showToast(
+                            msg: 'Sign in successful!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const PagesView(selectedTab: Tab.house),
                 ));
             } else {
+              Fluttertoast.showToast(
+                            msg: 'Sign in Unsuccessful, Invalid Credentials!',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
                 // Handle failed login
                 print('DEVIN: Failed to login: ${response.statusCode}');
             }
@@ -207,6 +225,7 @@ class _LoginViewState extends State<Login> {
                     onPressed: isSignInButtonDisabled
                         ? null
                         : () {
+                          
                             loginUser(name, password);
                         },
                   child: const Text('Sign In'),

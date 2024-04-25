@@ -89,10 +89,8 @@ class _SignUpViewState extends State<SignUpView> {
       );
 
       // Navigate to login screen after successful registration
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Login(toggleTheme: () {  },)),
-      );
+      Navigator.pop(context);
+      
     } else if (response.statusCode == 400 && jsonDecode(response.body)['error'] == 'Username already exists') {
       Fluttertoast.showToast(
         msg: 'Username already exists. Please choose a different username.',
@@ -103,7 +101,21 @@ class _SignUpViewState extends State<SignUpView> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-    } else {
+    } 
+    else if (response.statusCode == 402 ) {
+      Fluttertoast.showToast(
+        msg: 'Invalid Tank ID',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+    
+    else {
+
       print('Failed to register: ${response.body}');
       Fluttertoast.showToast(
         msg: 'Sign up failed. Please try again.',
