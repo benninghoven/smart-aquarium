@@ -511,7 +511,9 @@ Future<void> fetchOurData() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Fish'),
+        automaticallyImplyLeading: false, // Disable the back arrow
+        title: const Text('Select Fish', textAlign: TextAlign.center,),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(

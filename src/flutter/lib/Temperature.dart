@@ -314,7 +314,8 @@ Future<void> fetchData() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Water Temperature °F Chart'),
+        title: Text('Water Temperature °F Chart', textAlign: TextAlign.center,),
+        centerTitle: true,
       ),
       body: Stack(
         children: [

@@ -316,7 +316,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Water pH Chart'),
+        title: Text('Water pH Chart', textAlign: TextAlign.center,),
+        centerTitle: true,
       ),
       body: Stack(
         children: [
