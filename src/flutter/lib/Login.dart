@@ -229,6 +229,8 @@ class _LoginViewState extends State<Login> {
                         : () {
                           
                             loginUser(name, password);
+                            _nameController.clear();
+                        _passwordController.clear();
                         },
                   child: const Text('Sign In'),
                 ),
@@ -313,10 +315,10 @@ class _PagesViewState extends State<PagesView>
           TabBarView(
             physics: const NeverScrollableScrollPhysics(),
             controller: _tabController,
-            children: const [
+            children:  [
               FirstScreen(),
               SecondScreen(),
-              ThirdScreen(),
+              ThirdScreen(toggleTheme: () {  },),
             ],
           ),
           Align(
@@ -553,26 +555,91 @@ Future<void> fetchOurData() async {
 
 
 
+class ThirdScreen extends StatefulWidget {
+  final VoidCallback toggleTheme;
 
-class ThirdScreen extends StatelessWidget {
-  const ThirdScreen({Key? key}) : super(key: key);
+  const ThirdScreen({Key? key, required this.toggleTheme}) : super(key: key);
 
   @override
+  _ThirdScreenState createState() => _ThirdScreenState();
+}
+class _ThirdScreenState extends State<ThirdScreen> {
+  bool useSystemTheme = true; // Track if the system theme should be used
+  bool isDarkTheme = false; // New variable to track the theme
+
+  void toggleTheme() {
+    setState(() {
+      if (useSystemTheme == isDarkTheme) {
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      } else if (useSystemTheme != isDarkTheme) {
+        useSystemTheme = false;
+        isDarkTheme = !isDarkTheme;
+      }
+    });
+  }
+  @override
   Widget build(BuildContext context) {
+    bool isDarkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // Disable the back arrow
-        title: const Text('Third Screen'),
+        title: const Text('Settings'), // Changed the title to "Settings"
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to the Third Screen!',
-          style: TextStyle(fontSize: 24),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'General Settings',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            ListTile(
+              title: Text('Dark Mode'),
+              trailing: Checkbox(
+                value: isDarkModeEnabled,
+                onChanged: (_) {
+                  print('Checkbox onChanged triggered');
+                  widget.toggleTheme(); // Call toggleTheme function
+                },
+              ),
+            ),
+            ListTile(
+              title: Text('Notifications'),
+              trailing: Switch(
+                value: true, // Example, you can set this value based on user preference
+                onChanged: (value) {
+                  // Implement logic to toggle notifications
+                },
+              ),
+            ),
+            Divider(), // A divider for visual separation
+
+            Text(
+              'Account Settings',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            ListTile(
+              title: Text('Change Password'),
+              onTap: () {
+                // Implement navigation to change password screen
+              },
+            ),
+            ListTile(
+              title: Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
 
 
 
