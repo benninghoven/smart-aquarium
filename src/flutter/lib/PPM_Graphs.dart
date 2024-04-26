@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:intl/intl.dart';
+
 
 class WaterData {
   final int timestamp;
@@ -93,18 +95,28 @@ Future<void> fetchData() async {
 
 
   DateTime _parseDateString(String dateString) {
-    // Sample date format: "Tue, 26 Mar 2024 20:33:03 GMT"
-    List<String> parts = dateString.split(' ');
-    int day = int.parse(parts[1]);
-    int month = _getMonthNumber(parts[2]);
-    int year = int.parse(parts[3]);
-    List<String> timeParts = parts[4].split(':');
-    int hour = int.parse(timeParts[0]);
-    int minute = int.parse(timeParts[1]);
-    int second = int.parse(timeParts[2]);
+  // Sample date format: "Tue, 26 Mar 2024 20:33:03 GMT"
+  List<String> parts = dateString.split(' ');
+  int day = int.parse(parts[1]);
+  int month = _getMonthNumber(parts[2]);
+  int year = int.parse(parts[3]);
+  List<String> timeParts = parts[4].split(':');
+  int hour = int.parse(timeParts[0]);
+  int minute = int.parse(timeParts[1]);
+  int second = int.parse(timeParts[2]);
 
-    return DateTime(year, month, day, hour, minute, second);
-  }
+  // Create a DateTime object in GMT time zone
+  DateTime dateTimeGMT = DateTime.utc(year, month, day, hour, minute, second);
+
+  // Convert the DateTime from GMT to PST
+  String pstTimeZone = 'America/Los_Angeles'; // PST time zone
+  String formattedDateTimePST =
+      DateFormat.yMd().add_jms().format(dateTimeGMT.toLocal());
+
+  // Parse the formatted DateTime string back to DateTime object in PST
+  return DateFormat.yMd().add_jms().parse(formattedDateTimePST);
+}
+
 
   int _getMonthNumber(String month) {
     switch (month) {
@@ -270,7 +282,7 @@ Future<void> fetchData() async {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(50.0),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: LineChart(_buildChartData()),
