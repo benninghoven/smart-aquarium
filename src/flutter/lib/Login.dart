@@ -318,7 +318,7 @@ class _PagesViewState extends State<PagesView>
             children:  [
               FirstScreen(),
               SecondScreen(),
-              ThirdScreen(toggleTheme: () {  },),
+              ThirdScreen(toggleTheme: () {  }, isDarkTheme: false),
             ],
           ),
           Align(
@@ -351,6 +351,7 @@ class _SecondScreenState extends State<SecondScreen> {
   String selectedFish = '';
   Map<String, dynamic> fishData = {};
   late List<dynamic> jsonData; // Define jsonData as a class-level variable
+  bool isDarkTheme = false; // New variable to track the theme
 
 Future<void> fetchOurData() async {
   try {
@@ -517,7 +518,18 @@ Future<void> fetchOurData() async {
         title: const Text('Select Fish', textAlign: TextAlign.center,),
         centerTitle: true,
       ),
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDarkTheme
+                ? [Colors.blueGrey.shade900, Colors.blueGrey.shade700]
+                : [Colors.blue.shade200, Colors.blue.shade400],
+          ),
+        ),
+        child: Center(
+          
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -549,6 +561,7 @@ Future<void> fetchOurData() async {
           ],
         ),
       ),
+    )
     );
   }
 }
@@ -557,30 +570,23 @@ Future<void> fetchOurData() async {
 
 class ThirdScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
+  
+  final bool isDarkTheme;
 
-  const ThirdScreen({Key? key, required this.toggleTheme}) : super(key: key);
+  const ThirdScreen({Key? key, required this.isDarkTheme, required this.toggleTheme}) : super(key: key);
 
   @override
-  _ThirdScreenState createState() => _ThirdScreenState();
+  _ThirdScreenState createState() => _ThirdScreenState(isDarkTheme: isDarkTheme);
 }
 class _ThirdScreenState extends State<ThirdScreen> {
   bool useSystemTheme = true; // Track if the system theme should be used
-  bool isDarkTheme = false; // New variable to track the theme
+  bool isNotificationEnabled = true; // Track the state of the notification
+  final bool isDarkTheme;
+  _ThirdScreenState({required this.isDarkTheme});
 
-  void toggleTheme() {
-    setState(() {
-      if (useSystemTheme == isDarkTheme) {
-        useSystemTheme = false;
-        isDarkTheme = !isDarkTheme;
-      } else if (useSystemTheme != isDarkTheme) {
-        useSystemTheme = false;
-        isDarkTheme = !isDarkTheme;
-      }
-    });
-  }
+  
   @override
   Widget build(BuildContext context) {
-    bool isDarkModeEnabled = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -599,22 +605,31 @@ class _ThirdScreenState extends State<ThirdScreen> {
             ListTile(
               title: Text('Dark Mode'),
               trailing: Checkbox(
-                value: isDarkModeEnabled,
+                value: isDarkTheme,
                 onChanged: (_) {
                   print('Checkbox onChanged triggered');
-                  widget.toggleTheme(); // Call toggleTheme function
+                  
                 },
               ),
             ),
+             // Track the state of the notification
+
             ListTile(
               title: Text('Notifications'),
-              trailing: Switch(
-                value: true, // Example, you can set this value based on user preference
-                onChanged: (value) {
-                  // Implement logic to toggle notifications
+              trailing: IconButton(
+                icon: Icon(
+                  isNotificationEnabled ? Icons.notifications : Icons.notifications_off,
+                  color: isNotificationEnabled ? Colors.blue : Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    // Toggle the state of the notification
+                    isNotificationEnabled = !isNotificationEnabled;
+                  });
                 },
               ),
             ),
+
             Divider(), // A divider for visual separation
 
             Text(
