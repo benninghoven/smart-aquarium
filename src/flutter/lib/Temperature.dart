@@ -343,27 +343,40 @@ Future<void> fetchData() async {
             ],
           ),
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isDaily = !isDaily;
-                });
-                fetchData();
-              },
-              child: Container(
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                color: Colors.white,
-                child: Text(
-                  isDaily? 'Daily Chart' : 'Last 7 Days',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            )
+  bottom: 0,
+  left: 400,
+  right: 400,
+  child: Container(
+    padding: EdgeInsets.all(16), // Adjust padding as needed
+    child: ElevatedButton(
+      onPressed: () {
+        setState(() {
+          isDaily = !isDaily;
+        });
+        fetchData();
+      },
+      style: ButtonStyle(
+        backgroundColor: isDaily
+            ? MaterialStateProperty.all(Colors.white) // Keep white background if it's already daily
+            : MaterialStateProperty.all(Colors.white), // Transparent background
+        padding: MaterialStateProperty.all(EdgeInsets.zero), // No padding
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10), // No border radius
+            side: BorderSide(color: Colors.blue, width: 2.0), // Border color and width
+          ),
+        ),
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Padding for the text
+        child: Text(
+          isDaily ? 'Daily Chart' : 'Last 7 Days',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
+        ),
+      ),
+    ),
+  ),
+)
         ],
       ),
     );
