@@ -85,11 +85,13 @@ class _LoginViewState extends State<Login> {
           return 'http://localhost:5000/login';
         } else if (Platform.isAndroid) {
           // Handle Android platform
-          return 'http://localhost:5000/login';
+          return 'http://10.0.2.2:5000/login';
         } else if (Platform.isIOS) {
           // Handle iOS platform
           return 'http://localhost:5000/login';
-        } else {
+        }
+         
+        else {
           // Handle other platforms (if any)
           return 'http://localhost:5000/login';
         }

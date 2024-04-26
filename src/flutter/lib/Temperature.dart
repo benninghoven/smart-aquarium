@@ -26,6 +26,7 @@ class _FourthScreenState extends State<FourthScreen> {
   List<WaterData> dataPoints = [];
   Timer? _timer;
   double latestTemp = 0; // Default latest water_temp
+  bool isDaily = false;
 
   @override
   void initState() {
@@ -44,7 +45,57 @@ class _FourthScreenState extends State<FourthScreen> {
   }
 
 Future<void> fetchData() async {
-  try {
+  if (isDaily == true){
+    try {
+    String apiUrl = kIsWeb
+        ? 'http://localhost:5000/get_daily_readings'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:5000/get_daily_readings'
+            : 'http://localhost:5000/get_daily_readings';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    String latestApiUrl = kIsWeb
+        ? 'http://localhost:5000/get_latest_reading'
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:5000/get_latest_reading'
+            : 'http://localhost:5000/get_latest_reading';
+
+    final latestResponse = await http.get(Uri.parse(latestApiUrl));
+
+    if (latestResponse.statusCode == 200) {
+      Map<String, dynamic> latestJsonResponse = jsonDecode(latestResponse.body);
+      double latestWaterTempValue = latestJsonResponse['water_temp'].toDouble();
+      print('Latest Water_Temp Response: $latestJsonResponse'); // Debug statement
+      setState(() {
+        latestTemp = latestWaterTempValue;
+      });
+    } else {
+      throw Exception('Failed to load latest Water_Temp data: ${latestResponse.statusCode}');
+    }
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      List<WaterData> fetchedData = jsonResponse.map((data) {
+        // Parse the date string manually
+        DateTime dateTime = _parseDateString(data['timestp']);
+        return WaterData(
+          dateTime.millisecondsSinceEpoch,
+          data['water_temp'].toDouble(),
+          data['water_temp'].toDouble(), // Assuming water_temp is initially the latest value
+        );
+      }).toList();
+      setState(() {
+        dataPoints = fetchedData;
+      });
+    } else {
+      throw Exception('Failed to load data: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching data: $e');
+  }
+  }
+  else{
+    try {
     String apiUrl = kIsWeb
         ? 'http://localhost:5000/get_all_readings'
         : Platform.isAndroid
@@ -90,6 +141,7 @@ Future<void> fetchData() async {
     }
   } catch (e) {
     print('Error fetching data: $e');
+  }
   }
 }
 
@@ -294,16 +346,24 @@ Future<void> fetchData() async {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(vertical: 8),
-              color: Colors.white,
-              child: Text(
-                'Last 7 Days',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isDaily = !isDaily;
+                });
+                fetchData();
+              },
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 8),
+                color: Colors.white,
+                child: Text(
+                  isDaily? 'Daily Chart' : 'Last 7 Days',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          ),
+            )
         ],
       ),
     );

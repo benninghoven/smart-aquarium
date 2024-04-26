@@ -47,14 +47,24 @@ def get_all_readings():
     return jsonify({"error": "Could not connect to MySQL"})
 
 
-@app.route("/get_7_day_readings", methods=["GET"])
-def get_7_day_readings():
+@app.route("/get_daily_readings", methods=["GET"])
+def get_daily_readings():
     conn = connect_to_mysql()
     if conn:
-        seven_day_query = """SELECT * FROM FISHOLOGY.SENSOR_READINGS WHERE timestp >= DATE_SUB(NOW(), INTERVAL 7 DAY);"""
-        seven_day_result = query_to_json(conn, seven_day_query)
+        everything_query = """
+                            SELECT *
+                            FROM (
+                                SELECT *,
+                                    ROW_NUMBER() OVER (ORDER BY TIMESTP DESC) AS ROW_NUM_ASC,
+                                    ROW_NUMBER() OVER () AS ROW_NUM
+                                FROM FISHOLOGY.SENSOR_READINGS
+                            ) AS SUBQUERY
+                            WHERE ROW_NUM_ASC<= 10080/7 AND ROW_NUM % 5 = 1
+                            ORDER BY TIMESTP ASC;
+                            """
+        everything_result = query_to_json(conn, everything_query)
         conn.close()
-        return jsonify(seven_day_result)
+        return jsonify(everything_result)
     return jsonify({"error": "Could not connect to MySQL"})
 
 
