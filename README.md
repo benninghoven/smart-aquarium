@@ -28,3 +28,12 @@ This project is a Smart Aquarium Monitoring System designed to provide real-time
 3. Once connected, you will see real-time data from the sensors displayed on the app's dashboard.
 4. Set up threshold values for pH, ppm, and temperature to receive alerts when any parameter goes out of range.
 5. Monitor historical data trends and adjust settings as needed to maintain optimal conditions for your freshwater fish.
+
+### Running the project:
+
+- cd  into the downloaded github directory foler
+- cd into the /src/ file
+- open a second terminal in the same folder directory
+- in the first terminal, write ``` docker compose up ```
+- wait until the docker command has finished running
+- in the second terminal write ``` flutter run ```
